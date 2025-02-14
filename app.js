@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "INVEST" });
+  res.json({ message: "INVEST da API" });
 });
 
 app.listen(PORT, () => {
