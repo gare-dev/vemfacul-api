@@ -19,7 +19,7 @@ app.use(express.json());
 
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
-
+app.post('/api/loginaccount', usersTableController.loginAccount)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

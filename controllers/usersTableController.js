@@ -39,6 +39,31 @@ const usersTableController = {
         console.log(error)
     },
 
+    loginAccount: async (req, res) => {
+        const { password, email } = req.body
+
+        try {
+            const response = await usersTableModel.loginAccount(email, password)
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Login realizado com sucesso!",
+                    code: "LOGIN_SUCCESS"
+                })
+            }
+
+            return res.status(401).json({
+                message: "Email ou senha incorretos.",
+                code: "INVALID_EMAIL_OR_PASSWORD"
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+            })
+        }
+    },
+
     confirmAccount: async (req, res) => {
         const { token } = req.body
 

@@ -28,6 +28,17 @@ const usersTableModel = {
         }
     },
 
+    loginAccount: async (email, password) => {
+        const values = [password, email]
+
+        try {
+            const query = "SELECT * FROM users_table WHERE senha = $1 AND email = $2"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+
     checkAccount: async (email) => {
         const values = [cryptr.decrypt(email)]
 
