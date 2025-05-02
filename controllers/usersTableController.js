@@ -1,6 +1,8 @@
+
 const usersTableModel = require("../models/usersTableModel")
 const sendConfirmationEmail = require("../smtp/createAccount")
 const jwt = require("jsonwebtoken")
+const supabase = require("../config/supabaseClient")
 
 
 const usersTableController = {
@@ -82,7 +84,90 @@ const usersTableController = {
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
             })
         }
+    },
+
+    registerAccount: async (req, res) => {
+        const userData = JSON.parse(req.body.userData)
+        const {
+            nome, estado, nivel, escola, ano, vestibulares, passouVestibular,
+            universidade, curso, formouEM, trabalha, instituicao, materiasLecionadas, email
+        } = userData
+
+        const photo = req.file;
+        console.log(req.file)
+
+        try {
+
+            const uploadPhoto = async (photo) => {
+                const filePath = `images/${Date.now()}_${photo.originalname}`;
+
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from("users-photos")
+                    .upload(filePath, photo.buffer, {
+                        contentType: photo.mimetype,
+                        upsert: true,
+                    });
+
+                if (uploadError) {
+                    throw new Error('Erro ao enviar para o Supabase: ' + uploadError.message);
+                }
+
+                const { data: publicUrlData } = supabase
+                    .storage
+                    .from("users-photos")
+                    .getPublicUrl(filePath);
+
+                return publicUrlData.publicUrl;
+            };
+
+            let fotoUrl = null;
+
+            if (photo) {
+
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+                if (!allowedTypes.includes(photo.mimetype)) {
+                    return res.status(400).json({ error: 'Formato de imagem inválido. Apenas JPEG, PNG e GIF são permitidos.' });
+                }
+
+
+                fotoUrl = await uploadPhoto(photo);
+
+
+                const { data: updateData, error: updateError } = await supabase
+                    .from("users_table")
+                    .update({ foto: fotoUrl })
+                    .eq("email", email);
+
+                if (updateError) {
+                    throw new Error('Erro ao atualizar foto do usuário: ' + updateError.message);
+                }
+            }
+
+            const response = await usersTableModel.registerAccount(
+                nome, null, estado, nivel, escola, ano, vestibulares, materiasLecionadas,
+                passouVestibular, universidade, curso, formouEM, trabalha, instituicao, email
+            );
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Conta registrada com sucesso!",
+                    code: "REGISTERED_ACCOUNT"
+                });
+            }
+
+            // Caso não registre corretamente
+            return res.status(400).json({
+                message: "Falha ao registrar a conta. Por favor, tente novamente."
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
     }
+
 }
 
 module.exports = usersTableController

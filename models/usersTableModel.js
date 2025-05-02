@@ -1,6 +1,7 @@
 const pool = require("../config/db")
 const jwt = require("jsonwebtoken")
 const cryptr = require("../cryptr/cryptr")
+const multer = require("multer")
 
 
 
@@ -50,8 +51,46 @@ const usersTableModel = {
         } catch (err) {
             throw err
         }
+    },
+
+    registerAccount: async (nome, foto, estado, nivel, escola, ano, vestibulares, materiasLecionadas, passouVestibular, universidade, curso, formouEM, trabalha, instituicao, email) => {
+        const values = [nome, estado, nivel]
+        const token = jwt.decode(email)
+
+        try {
+
+            switch (values[2]) {
+                case "Aluno EM":
+                    values.push(escola, ano, vestibulares, token.email)
+
+                    return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, escola = $4, ano = $5, vestibulares = $6 WHERE email = $7", values)
+                case "Universitário":
+                    values.push(passouVestibular, universidade, curso, token.email)
+
+                    return await pool.query("UPATE users_table SET nome = $1, estado = $2, nivel = $3, passouVestibular = $4, universidade = $5, curso = $6 WHERE email = $7", values)
+                case "Vestibulando":
+                    values.push(formouEM, trabalha, vestibulares, token.email)
+
+                    return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, formouEM = $4, trabalha = $5, vestibulares = $6 WHERE email = $7", values)
+                case "Professor":
+                    values.push(instituicao, materiasLecionadas, token.email)
+
+                    return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, instituicao = $4, materiasLecionadas = $5 WHERE email = $6", values)
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
+
+
+
+
+
+
+
 }
+
+
 
 module.exports = usersTableModel

@@ -2,6 +2,7 @@ const express = require("express");
 const usersTableController = require("./controllers/usersTableController");
 require("dotenv").config();
 const cors = require("cors");
+const upload = require("./config/multer");
 
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json());
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
 app.post('/api/loginaccount', usersTableController.loginAccount)
+app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
