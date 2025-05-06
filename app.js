@@ -3,12 +3,14 @@ const usersTableController = require("./controllers/usersTableController");
 require("dotenv").config();
 const cors = require("cors");
 const upload = require("./config/multer");
+const cookieParser = require("cookie-parser");
 
 
 const app = express();
 const PORT = 3001;
 
 app.use(cors({
+  credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   origin: [
     "http://localhost:3000",
@@ -16,6 +18,7 @@ app.use(cors({
   ]
 }));
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.post('/api/createaccount', usersTableController.createAccount)

@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-const upload = multer({ storage: multer.memoryStorage() }); // Armazena o arquivo na memória RAM
+const upload = multer({ storage: multer.memoryStorage() });
 
 module.exports = upload;
 

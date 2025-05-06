@@ -17,6 +17,20 @@ const usersTableModel = {
         }
     },
 
+    updatePhoto: async (fotoUrl, email) => {
+        const emailJwt = jwt.decode(email)
+
+        const values = [fotoUrl, emailJwt.email]
+
+        try {
+            const query = "UPDATE users_table SET foto = $1 WHERE email = $2"
+            return pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+
+    },
+
     confirmAccount: async (token) => {
         const login = jwt.decode(token)
         const values = [login.email]

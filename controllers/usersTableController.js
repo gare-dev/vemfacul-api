@@ -46,9 +46,11 @@ const usersTableController = {
 
         try {
             const response = await usersTableModel.loginAccount(email, password)
+            console.log(response.rows)
 
             if (response.rowCount >= 1) {
-                return res.status(200).json({
+                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome }, process.env.SECRET, { expiresIn: 36000 })
+                return res.cookie('auth', token).status(200).json({
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS"
                 })
@@ -62,6 +64,7 @@ const usersTableController = {
         } catch (error) {
             return res.status(500).json({
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString()
             })
         }
     },
@@ -94,12 +97,11 @@ const usersTableController = {
         } = userData
 
         const photo = req.file;
-        console.log(req.file)
 
         try {
 
             const uploadPhoto = async (photo) => {
-                const filePath = `images/${Date.now()}_${photo.originalname}`;
+                const filePath = `images/${Date.now()}_${photo.originalname}_${email}`;
 
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from("users-photos")
@@ -112,8 +114,7 @@ const usersTableController = {
                     throw new Error('Erro ao enviar para o Supabase: ' + uploadError.message);
                 }
 
-                const { data: publicUrlData } = supabase
-                    .storage
+                const { data: publicUrlData } = supabase.storage
                     .from("users-photos")
                     .getPublicUrl(filePath);
 
@@ -123,23 +124,17 @@ const usersTableController = {
             let fotoUrl = null;
 
             if (photo) {
-
                 const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
                 if (!allowedTypes.includes(photo.mimetype)) {
                     return res.status(400).json({ error: 'Formato de imagem inválido. Apenas JPEG, PNG e GIF são permitidos.' });
                 }
 
-
                 fotoUrl = await uploadPhoto(photo);
 
-
-                const { data: updateData, error: updateError } = await supabase
-                    .from("users_table")
-                    .update({ foto: fotoUrl })
-                    .eq("email", email);
-
-                if (updateError) {
-                    throw new Error('Erro ao atualizar foto do usuário: ' + updateError.message);
+                try {
+                    await usersTableModel.updatePhoto(fotoUrl, email)
+                } catch (error) {
+                    throw new Error("Erro ao atualizar foto." + error)
                 }
             }
 
