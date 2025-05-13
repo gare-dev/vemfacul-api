@@ -4,6 +4,8 @@ require("dotenv").config();
 const cors = require("cors");
 const upload = require("./config/multer");
 const cookieParser = require("cookie-parser");
+const eventsTableController = require("./controllers/eventsTableController");
+const personalEventsTableController = require("./controllers/personalEventsTableController");
 
 
 const app = express();
@@ -25,7 +27,11 @@ app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
+app.post('/api/createevent', upload.single("imagem"), eventsTableController.createEvent)
+app.post('/api/getevents', eventsTableController.getEvents)
+app.post('/api/insertpevennts', personalEventsTableController.insertPersonalEvent)
+app.post('/api/getpevents', personalEventsTableController.getPersonalEvents)
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is now running on port ${PORT}`);
 });

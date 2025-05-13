@@ -49,7 +49,7 @@ const usersTableController = {
             console.log(response.rows)
 
             if (response.rowCount >= 1) {
-                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome }, process.env.SECRET, { expiresIn: 36000 })
+                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user }, process.env.SECRET, { expiresIn: 36000 })
                 return res.cookie('auth', token).status(200).json({
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS"
