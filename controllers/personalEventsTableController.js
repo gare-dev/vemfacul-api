@@ -17,9 +17,9 @@ const personalEventsTableController = {
             color,
             main_title,
         } = req.body;
-        const token = req.cookie
+        const token = req.cookies.auth
         const secret = process.env.SECRET;
-        const decoded = jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpcG9jYWdhbWVyNjFAZ21haWwuY29tIiwiaW1hZ2UiOiJodHRwczovL2JzeHRqeHZpbWlkcHh5amlkbnJsLnN1cGFiYXNlLmNvL3N0b3JhZ2UvdjEvb2JqZWN0L3B1YmxpYy91c2Vycy1waG90b3MvaW1hZ2VzLzE3NDYzOTUwMjk0ODRfZXVldGVjLmpwZ19leUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW5CcGNHOWpZV2RoYldWeU5qRkFaMjFoYVd3dVkyOXRJaXdpYVdGMElqb3hOelExT1RJMU9ETTFMQ0psZUhBaU9qRTNORFU1TWprME16VjkuREZYMWVxTFI1OU1GQTVXcm9ESFhLcmJBeEtDRC1feHdnV1lKbzdaOU1JUSIsIm5hbWUiOiJHQUVMIiwiaWQiOiI0MiIsImlhdCI6MTc0NzEwMDkyMSwiZXhwIjoxNzQ3MTM2OTIxfQ.lD0LLpQYzcaNq09JebQs47sJDqL1jG_6oBAiBcXe9mg", secret);
+        const decoded = jwt.verify(token, secret);
         const idUser = decoded.id
 
         try {
@@ -49,9 +49,9 @@ const personalEventsTableController = {
     },
 
     getPersonalEvents: async (req, res) => {
-        const token = req.cookie
+        const token = req.cookies.auth
         const secret = process.env.SECRET;
-        const decoded = jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpcG9jYWdhbWVyNjFAZ21haWwuY29tIiwiaW1hZ2UiOiJodHRwczovL2JzeHRqeHZpbWlkcHh5amlkbnJsLnN1cGFiYXNlLmNvL3N0b3JhZ2UvdjEvb2JqZWN0L3B1YmxpYy91c2Vycy1waG90b3MvaW1hZ2VzLzE3NDYzOTUwMjk0ODRfZXVldGVjLmpwZ19leUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW5CcGNHOWpZV2RoYldWeU5qRkFaMjFoYVd3dVkyOXRJaXdpYVdGMElqb3hOelExT1RJMU9ETTFMQ0psZUhBaU9qRTNORFU1TWprME16VjkuREZYMWVxTFI1OU1GQTVXcm9ESFhLcmJBeEtDRC1feHdnV1lKbzdaOU1JUSIsIm5hbWUiOiJHQUVMIiwiaWQiOiI0MiIsImlhdCI6MTc0NzEwMDkyMSwiZXhwIjoxNzQ3MTM2OTIxfQ.lD0LLpQYzcaNq09JebQs47sJDqL1jG_6oBAiBcXe9mg", secret);
+        const decoded = jwt.verify(token, secret);
         const idUser = decoded.id
 
         try {
