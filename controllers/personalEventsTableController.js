@@ -69,6 +69,50 @@ const personalEventsTableController = {
                 error: error.toString(),
             });
         }
+    },
+
+
+    insertPersonalLocalEvent: async (req, res) => {
+        const {
+            day,
+            month,
+            year,
+            title,
+            descricao,
+            color,
+            main_title,
+            hora,
+            isImportant
+        } = req.body;
+        const token = req.cookies.auth
+        const secret = process.env.SECRET;
+        const decoded = jwt.verify(token, secret);
+        const idUser = decoded.id
+
+        try {
+            const response = await personalEventsTableModel.insertPersonalLocalEvent(idUser, day, month, year, title, descricao, color, main_title, hora, isImportant)
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    code: "EVENT_ADDED",
+                    message: "Evento adicionado na sua agenda pessoal."
+                })
+            }
+
+            if (response.rowCount >= 0) {
+                return res.status(404).json({
+                    code: "EVENT_ERROR",
+                    message: "Evento não adicionado a sua agenda pessoal."
+                })
+            }
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+
+        }
     }
 };
 
