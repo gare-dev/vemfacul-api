@@ -33,6 +33,8 @@ app.post('/api/getevents', eventsTableController.getEvents)
 app.post('/api/insertpevennts', personalEventsTableController.insertPersonalEvent)
 app.post('/api/getpevents', personalEventsTableController.getPersonalEvents)
 app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocalEvent)
+app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
+app.post('/api/getuserprofile', usersTableController.getUserProfile)
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);

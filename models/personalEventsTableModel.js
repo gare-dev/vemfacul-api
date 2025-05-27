@@ -35,6 +35,18 @@ const personalEventsTableModel = {
         } catch (err) {
             throw err
         }
+    },
+
+    deletePersonalEvent: async (id_user, id_event) => {
+        const values = [id_user, id_event]
+
+        try {
+            const query = "DELETE FROM personal_events WHERE id_user = $1 AND id_pevent = $2"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+
 
     }
 }

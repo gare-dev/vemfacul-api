@@ -28,7 +28,6 @@ const usersTableModel = {
         } catch (err) {
             throw err
         }
-
     },
 
     confirmAccount: async (token) => {
@@ -56,7 +55,6 @@ const usersTableModel = {
 
     checkAccount: async (email) => {
         const values = [cryptr.decrypt(email)]
-
 
         try {
             const query = "SELECT * FROM users_table WHERE email = $1"
@@ -94,15 +92,31 @@ const usersTableModel = {
         } catch (err) {
             throw err
         }
+    },
+
+    getUserProfile: async (username) => {
+        const values = [username]
+
+        try {
+
+            const query = "SELECT nome, username, foto, header, descricao, followers_number, following_number, posts_number, vestibulares, materias_lecionadas FROM users_table WHERE username = $1"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+
+    changeUserPhoto: async (foto, id) => {
+        const values = [foto, id]
+
+        try {
+            const query = "UPDATE users_table SET foto = $1 WHERE id_user = $2"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+
     }
-
-
-
-
-
-
-
-
 }
 
 

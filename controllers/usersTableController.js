@@ -49,7 +49,7 @@ const usersTableController = {
             console.log(response.rows)
 
             if (response.rowCount >= 1) {
-                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user }, process.env.SECRET, { expiresIn: 36000 })
+                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000 })
                 return res.cookie('auth', token).status(200).json({
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS"
@@ -161,8 +161,88 @@ const usersTableController = {
                 error: error.toString(),
             });
         }
-    }
+    },
 
+    getUserProfile: async (req, res) => {
+        const { username } = req.body
+
+        try {
+            const response = await usersTableModel.getUserProfile(username)
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    code: "USER_FOUND",
+                    data: response.rows[0]
+                })
+            }
+
+            return res.status(404).json({
+                code: "USER_NOT_FOUND",
+                message: "Usuário não encontrado."
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    },
+
+    chageUserPhoto: async (req, res) => {
+        const photo = req.file;
+        const token = req.cookies.auth
+        const secret = process.env.SECRET;
+        const decoded = jwt.verify(token, secret);
+        const email = decoded.email
+        const id = decoded.id
+
+        const uploadPhoto = async (photo) => {
+            const filePath = `images/${Date.now()}_${photo.originalname}_${email}`;
+
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from("users-photos")
+                .upload(filePath, photo.buffer, {
+                    contentType: photo.mimetype,
+                    upsert: true,
+                });
+
+            if (uploadError) {
+                throw new Error('Erro ao enviar para o Supabase: ' + uploadError.message);
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from("users-photos")
+                .getPublicUrl(filePath);
+
+            return publicUrlData.publicUrl;
+        };
+
+        try {
+            let fotoUrl = null;
+
+            if (photo) {
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+                if (!allowedTypes.includes(photo.mimetype)) {
+                    return res.status(400).json({ error: 'Formato de imagem inválido. Apenas JPEG, PNG e GIF são permitidos.' });
+                }
+
+                fotoUrl = await uploadPhoto(photo);
+
+                try {
+                    await usersTableModel.changeUserPhoto(fotoUrl, id)
+                } catch (error) {
+                    throw new Error("Erro ao atualizar foto." + error)
+                }
+            }
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    }
 }
 
 module.exports = usersTableController
