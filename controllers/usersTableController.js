@@ -150,7 +150,7 @@ const usersTableController = {
                 });
             }
 
-            // Caso não registre corretamente
+
             return res.status(400).json({
                 message: "Falha ao registrar a conta. Por favor, tente novamente."
             });
@@ -239,6 +239,85 @@ const usersTableController = {
         } catch (error) {
             return res.status(500).json({
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    },
+
+    editProfile: async (req, res) => {
+        try {
+            const userData = JSON.parse(req.body.userData);
+            const { name, descricao } = userData;
+            const token = req.cookies.auth;
+            const secret = process.env.SECRET;
+
+            const decoded = jwt.verify(token, secret);
+            const email = decoded.email;
+            const id = decoded.id;
+
+            const foto = req.files?.['foto'];
+            const header = req.files?.['header'];
+
+            let fotoUrl = null;
+            let headerUrl = null;
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+            const uploadToSupabase = async (file, type) => {
+                if (!allowedTypes.includes(file.mimetype)) {
+                    throw new Error(`Formato de imagem inválido (${type}). Apenas JPEG, PNG e GIF são permitidos.`);
+                }
+
+                const filePath = `${type}s/${Date.now()}_${file.originalname}_${email}`;
+                const { error: uploadError } = await supabase.storage
+                    .from("users-photos")
+                    .upload(filePath, file.buffer, {
+                        contentType: file.mimetype,
+                        upsert: true,
+                    });
+
+                if (uploadError) {
+                    throw new Error(`Erro ao enviar ${type} para o Supabase: ${uploadError.message}`);
+                }
+
+                const { data: publicUrlData } = supabase.storage
+                    .from("users-photos")
+                    .getPublicUrl(filePath);
+
+                return publicUrlData.publicUrl;
+            };
+
+            if (foto?.[0]) {
+                fotoUrl = await uploadToSupabase(foto[0], 'image');
+            }
+
+            if (header?.[0]) {
+                headerUrl = await uploadToSupabase(header[0], 'header');
+            }
+
+            const updateFields = { nome: name };
+
+            if (descricao) updateFields.descricao = descricao;
+            if (fotoUrl) updateFields.foto = fotoUrl;
+            if (headerUrl) updateFields.header = headerUrl;
+
+            const response = await usersTableModel.editProfileDynamic(updateFields, id);
+
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Perfil editado com sucesso!",
+                    code: "PROFILE_EDITED",
+                });
+            }
+
+            return res.status(404).json({
+                message: "Não foi possível editar o perfil",
+                code: "EDITED_ERROR",
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: "Estamos enfrentando problemas, por favor, tente novamente mais tarde.",
                 error: error.toString(),
             });
         }

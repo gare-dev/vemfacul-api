@@ -35,6 +35,7 @@ app.post('/api/getpevents', personalEventsTableController.getPersonalEvents)
 app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocalEvent)
 app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
+app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);
