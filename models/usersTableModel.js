@@ -112,7 +112,7 @@ const usersTableModel = {
 
         try {
 
-            const query = "SELECT nome, username, foto, header, descricao, followers_number, following_number, posts_number, vestibulares, materias_lecionadas FROM users_table WHERE username = $1"
+            const query = "SELECT nome, username, foto, header, descricao, followers, following, posts_number, vestibulares, materias_lecionadas, nivel FROM users_table WHERE username = $1"
             return await pool.query(query, values)
         } catch (err) {
             throw err
@@ -129,7 +129,44 @@ const usersTableModel = {
             throw err
         }
 
+    },
+
+    editProfile: async (name, descricao, foto, header, id_user) => {
+        const values = [name, descricao, foto, header, id_user]
+
+        try {
+            const query = "UPDATE users_table SET nome = $1, descricao = $2, foto = $3, header = $4 WHERE id_user = $5 "
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+
+    editProfileDynamic: async (fields, id_user) => {
+        const setParts = [];
+        const values = [];
+        let i = 1;
+
+        for (const [key, value] of Object.entries(fields)) {
+            setParts.push(`${key} = $${i}`);
+            values.push(value);
+            i++;
+        }
+
+        if (setParts.length === 0) {
+            throw new Error("Nenhum campo para atualizar.");
+        }
+
+        const query = `UPDATE users_table SET ${setParts.join(', ')} WHERE id_user = $${i}`;
+        values.push(id_user);
+
+        try {
+            return await pool.query(query, values);
+        } catch (err) {
+            throw err;
+        }
     }
+
 }
 
 
