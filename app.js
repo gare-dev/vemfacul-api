@@ -26,6 +26,7 @@ app.use(express.json());
 
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
+app.post('/api/forgotpassword', usersTableController.forgotPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
 app.post('/api/createevent', upload.single("imagem"), eventsTableController.createEvent)
@@ -35,6 +36,7 @@ app.post('/api/getpevents', personalEventsTableController.getPersonalEvents)
 app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocalEvent)
 app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
+
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);

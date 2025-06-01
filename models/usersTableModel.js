@@ -42,6 +42,19 @@ const usersTableModel = {
         }
     },
 
+    forgotPassword: async (email) => {
+        const values = [email]
+
+        try {
+            const query = "SELECT * FROM users_table WHERE email = $1";
+            return pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+
+
+    },
+
     loginAccount: async (email, password) => {
         const values = [password, email]
 
