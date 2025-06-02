@@ -617,7 +617,7 @@ const forgotPasswordHtml = (email, token) => {
                   style="display: block; background-color: #001ecb"
                  >
                   <a
-                   href="http://localhost:3000/redefinirSenha/"
+                   href="http://localhost:3000/alterarSenha/"
                    style="
                     color: #ffffff;
                     display: block;

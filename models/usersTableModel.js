@@ -55,6 +55,17 @@ const usersTableModel = {
 
     },
 
+    forgotPasswordAccount: async (password, email) => {
+        const values = [password, email]
+
+        try {
+            const query = "UPDATE users_table SET senha = $1 WHERE email = $2"
+            return pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+
     loginAccount: async (email, password) => {
         const values = [password, email]
 

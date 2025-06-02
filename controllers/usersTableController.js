@@ -120,6 +120,32 @@ const usersTableController = {
         }
     },
 
+    resetPassword: async (req, res) => {
+        const { password, email } = req.body
+
+        try {
+            const response = await usersTableModel.forgotPasswordAccount(password, email)
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Senha alterada com sucesso!",
+                    code: "PASSWORD_CHANGED"
+                })
+            }
+
+            return res.status(400).json({
+                message: "Falha ao alterar a senha. Por favor, tente novamente.",
+                code: "PASSWORD_CHANGE_FAILED"
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    },
+
     registerAccount: async (req, res) => {
         const userData = JSON.parse(req.body.userData)
         const {
