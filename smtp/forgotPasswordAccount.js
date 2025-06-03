@@ -1,15 +1,14 @@
 const { transporter } = require("../config/smtp");
 const forgotPasswordHtml = require("../emailHtml/forgotPasswordHtml");
-const crypto = require("crypto");
 
-const sendForgotPasswordEmail = async (destinatario, resetToken) => {
+const sendForgotPasswordEmail = async (destinatario) => {
     try {
  
         const mailOptions = {
             from: "tccvemfacul@gmail.com",
             to: destinatario,
             subject: "Recuperação de Senha",
-            html: forgotPasswordHtml(destinatario, resetToken),
+            html: forgotPasswordHtml(destinatario),
         }
 
         await transporter.mailer.sendMail(mailOptions);

@@ -1,6 +1,6 @@
 
 
-const forgotPasswordHtml = (email, token) => {
+const forgotPasswordHtml = (email) => {
   return `
    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
@@ -511,20 +511,7 @@ const forgotPasswordHtml = (email, token) => {
                "
               >
               Parece que você esqueceu sua senha, não se preocupe, estamos aqui para ajudar!<br />
-              Copie o token abaixo e cole no campo de redefinição de senha do VemFacul para criar uma nova senha.<br />
-              <div class="centerText token"
-               style="
-                font-family: 'Open Sans', Arial, Helvetica, sans-serif;
-               
-                font-size: 16px;
-                line-height: 26px;
-                font-weight: 700;
-                letter-spacing: 0px;
-                padding: 0;
-                margin-top: 20px;
-               ">
-                <span style="font-size: 20px; font-weight: 700;  color: #001ecb;">${token}</span>
-                </div>
+              Clique no botão abaixo para redefinir sua senha e recuperar o acesso à sua conta.
               </td>
              </tr>
             </table>
@@ -617,7 +604,7 @@ const forgotPasswordHtml = (email, token) => {
                   style="display: block; background-color: #001ecb"
                  >
                   <a
-                   href="http://localhost:3000/alterarSenha/"
+                   href="http://localhost:3000/alterarSenha/${email}"
                    style="
                     color: #ffffff;
                     display: block;
