@@ -1,7 +1,7 @@
 const express = require("express");
 const usersTableController = require("./controllers/usersTableController");
-require("dotenv").config();
 const cors = require("cors");
+require("dotenv").config();
 const upload = require("./config/multer");
 const cookieParser = require("cookie-parser");
 const eventsTableController = require("./controllers/eventsTableController");
@@ -38,7 +38,6 @@ app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocal
 app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
 app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
-
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);
