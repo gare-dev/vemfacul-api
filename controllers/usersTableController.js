@@ -1,6 +1,8 @@
 
 const usersTableModel = require("../models/usersTableModel")
 const sendConfirmationEmail = require("../smtp/createAccount")
+const sendForgotPasswordEmail = require("../smtp/forgotPasswordAccount")
+const crypto = require("crypto")
 const jwt = require("jsonwebtoken")
 const supabase = require("../config/supabaseClient")
 
@@ -34,7 +36,7 @@ const usersTableController = {
                 })
             }
             return res.status(500).json({
-                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                message: "Nós estamos enfrentando problemas. Por favor, tente novamente mais tarde.",
                 error: error
             })
         }
@@ -86,6 +88,61 @@ const usersTableController = {
             return res.status(500).json({
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
             })
+        }
+    },
+
+    forgotPassword: async (req, res) => {
+        const { email } = req.body
+        try {
+            const response = await usersTableModel.forgotPassword(email)
+            if (response.rowCount < 1) {
+                return res.status(404).json({
+                    message: "Email não encontrado.",
+                    code: "EMAIL_NOT_FOUND"
+                })
+            }
+            // const resetToken = crypto.randomBytes(32).toString('hex');
+            // const { error } = await supabase
+            //     .from('password_resets')
+            //     .insert([
+            //         { email: destinatario, token: resetToken }
+            //     ]);
+            sendForgotPasswordEmail(email)
+            return res.status(200).json({
+                message: "Email enviado com sucesso!",
+                code: "EMAIL_SENT"
+            })
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    },
+
+    resetPassword: async (req, res) => {
+        const { password, email } = req.body
+
+        try {
+            const response = await usersTableModel.forgotPasswordAccount(password, email)
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Senha alterada com sucesso!",
+                    code: "PASSWORD_CHANGED"
+                })
+            }
+
+            return res.status(400).json({
+                message: "Falha ao alterar a senha. Por favor, tente novamente.",
+                code: "PASSWORD_CHANGE_FAILED"
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
         }
     },
 

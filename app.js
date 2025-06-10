@@ -1,7 +1,7 @@
 const express = require("express");
 const usersTableController = require("./controllers/usersTableController");
-require("dotenv").config();
 const cors = require("cors");
+require("dotenv").config();
 const upload = require("./config/multer");
 const cookieParser = require("cookie-parser");
 const eventsTableController = require("./controllers/eventsTableController");
@@ -32,6 +32,8 @@ app.get('/', (req, res) => {
 
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
+app.post('/api/forgotpassword', usersTableController.forgotPassword)
+app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
 app.post('/api/createevent', upload.single("imagem"), eventsTableController.createEvent)

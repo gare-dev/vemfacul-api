@@ -42,6 +42,30 @@ const usersTableModel = {
         }
     },
 
+    forgotPassword: async (email) => {
+        const values = [email]
+
+        try {
+            const query = "SELECT * FROM users_table WHERE email = $1";
+            return pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+
+
+    },
+
+    forgotPasswordAccount: async (password, email) => {
+        const values = [password, email]
+
+        try {
+            const query = "UPDATE users_table SET senha = $1 WHERE email = $2"
+            return pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+
     loginAccount: async (email, password) => {
         const values = [password, email]
 
