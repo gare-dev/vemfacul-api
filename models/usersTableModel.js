@@ -2,8 +2,16 @@ const pool = require("../config/db")
 const jwt = require("jsonwebtoken")
 const cryptr = require("../cryptr/cryptr")
 const multer = require("multer")
+// cached
+const redis = require('redis')
+const client = redis.createClient()
 
+// rdis-cli 
+client.connect();
 
+client.on('error', (err) => {
+    console.log(err)
+});
 
 const usersTableModel = {
     createAccount: async (password, email) => {
@@ -175,6 +183,33 @@ const usersTableModel = {
             return await pool.query(query, values);
         } catch (err) {
             throw err;
+        }
+    },
+
+    selectProfile: async (email) => {
+        const values = [email]
+        const time = time => { time * 60 }
+
+        try {
+            console.time('redissave')
+            let user = await client.get(`${email}`);
+
+            if (!user) {
+                const query = "SELECT * FROM users_table WHERE email = $1";
+                const response = await pool.query(query, values)
+                user = response.rows[0]
+                await client.set(`${email}`, JSON.stringify(user), {
+                    expiration: time(0.1)
+                })
+                console.log('db passou aq')
+                return user
+            }
+            console.log('redis passou aq')
+            console.timeEnd('redissave')
+            return JSON.parse(user)
+
+        } catch (err) {
+            throw err
         }
     }
 

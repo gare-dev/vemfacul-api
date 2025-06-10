@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken")
 const supabase = require("../config/supabaseClient")
 
 
+
 const usersTableController = {
     createAccount: async (req, res) => {
         const { password, email } = req.body
@@ -299,6 +300,36 @@ const usersTableController = {
                 error: error.toString(),
             });
         }
+    },
+
+    selectCache: async (req, res) => {
+        const { email } = req.body
+
+        if (email) {
+            try {
+                const response = await usersTableModel.selectProfile(email)
+
+                if (response) {
+                    return res.status(200).json({
+                        code: "USER_FOUND",
+                        data: response
+                    })
+                }
+                return res.status(404).json({
+                    code: "USER_NOT_FOUND",
+                    message: "usuario nao encontrado"
+                })
+
+            } catch (error) {
+                return res.status(500).json({
+                    code: "DATABASE_ERROR",
+                    message: "error"
+                })
+            }
+        }
+        return res.status(404).json({
+            message: 'Ensira um email'
+        })
     },
 
     editProfile: async (req, res) => {
