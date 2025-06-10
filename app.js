@@ -24,6 +24,12 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: process.env.DATABASE_URL
+  })
+})
+
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
 app.post('/api/forgotpassword', usersTableController.forgotPassword)
@@ -37,6 +43,9 @@ app.post('/api/getpevents', personalEventsTableController.getPersonalEvents)
 app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocalEvent)
 app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
+app.get('/api/deptest', (req, res) => {
+  res.send(process.env.DATABASE_URL)
+})
 app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
 
 app.listen(PORT, () => {
