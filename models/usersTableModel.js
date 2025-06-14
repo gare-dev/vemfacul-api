@@ -92,7 +92,6 @@ const usersTableModel = {
             throw err;
         }
     },
-
     checkAccount: async (email) => {
         const values = [cryptr.decrypt(email)]
 
