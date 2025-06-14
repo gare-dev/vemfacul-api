@@ -5,6 +5,7 @@ const sendForgotPasswordEmail = require("../smtp/forgotPasswordAccount")
 const crypto = require("crypto")
 const jwt = require("jsonwebtoken")
 const supabase = require("../config/supabaseClient")
+const { getRedis, setRedis } = require("../redisConfig")
 
 
 
@@ -14,7 +15,6 @@ const usersTableController = {
 
         try {
             const response = await usersTableModel.createAccount(password, email)
-            // adding cacheRedis
 
             if (response.rowCount >= 1) {
                 const token = jwt.sign(
@@ -49,15 +49,43 @@ const usersTableController = {
         const { password, email } = req.body
 
         try {
-            const response = await usersTableModel.loginAccount(email, password)
-            console.log(response.rows)
+            console.time('redis')
+            const userRedis = await getRedis(email);
 
-            if (response.rowCount >= 1) {
-                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000 })
+            if (!userRedis) {
+                console.time('db')
+                const response = await usersTableModel.loginAccount(email, password)
+
+                if (response.rowCount >= 1) {
+                    const user = response.rows[0];
+                    const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000 })
+                    await setRedis(email, JSON.stringify(user))
+                    console.log(user)
+                    console.timeEnd('db')
+
+                    return res.cookie('auth', token).status(200).json({
+                        message: "Login realizado com sucesso!",
+                        code: "LOGIN_SUCCESS"
+                    })
+                }
+                return res.status(401).json({
+                    message: "Email ou senha incorretos.",
+                    code: "INVALID_EMAIL_OR_PASSWORD"
+                })
+            }
+            const user = JSON.parse(userRedis);
+            if (user.senha === password) {
+                const token = jwt.sign(
+                    { email: user.email, image: user.foto, name: user.nome, id: user.id_user, username: user.username },
+                    process.env.SECRET,
+                    { expiresIn: 36000 }
+                );
+                console.log(user);
+                console.timeEnd('redis')
                 return res.cookie('auth', token).status(200).json({
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS"
-                })
+                });
             }
 
             return res.status(401).json({

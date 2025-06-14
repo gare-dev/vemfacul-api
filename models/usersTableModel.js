@@ -2,7 +2,6 @@ const pool = require("../config/db")
 const jwt = require("jsonwebtoken")
 const cryptr = require("../cryptr/cryptr")
 const multer = require("multer")
-const { setRedis, getRedis } = require('../redisConfig');
 
 
 const usersTableModel = {
@@ -65,29 +64,12 @@ const usersTableModel = {
             throw err
         }
     },
-    
-    // NAO ACABEI
+
     loginAccount: async (email, password) => {
         const values = [password, email];
         try {
-            console.time('redisSave');
-            let user = await getRedis(email);
-            if (!user) {
-                const query = "SELECT * FROM users_table WHERE senha = $1 AND email = $2";
-                const response = await pool.query(query, values);
-                console.log('Banco retornou:', response.rows);
-                user = response.rows[0];
-                if (user) {
-                    await setRedis(email, JSON.stringify(user));
-                }
-                console.log('Usuário retornado do banco:', user);
-                console.timeEnd('redisSave');
-                return user;
-            } else {
-                console.log('Usuário retornado do Redis:', user);
-                console.timeEnd('redisSave');
-                return user ? JSON.parse(user) : null;
-            }
+            const query = "SELECT * FROM users_table WHERE senha = $1 AND email = $2";
+            return await pool.query(query, values);
         } catch (err) {
             throw err;
         }
@@ -191,30 +173,29 @@ const usersTableModel = {
         } catch (err) {
             throw err;
         }
-    },
-
-    selectProfile: async (email) => {
-        const values = [email]
-
-        try {
-            console.time('redissave')
-            let user = await getRedis(`${email}`);
-            if (!user) {
-                console.time('databasesave')
-                const query = "SELECT * FROM users_table WHERE email = $1";
-                const response = await pool.query(query, values)
-                user = response.rows[0]
-                await setRedis(`${email}`, JSON.stringify(user))
-                console.timeEnd('databasesave')
-                return user;
-            }
-            console.timeEnd('redissave')
-            return JSON.parse(user)
-
-        } catch (err) {
-            throw err
-        }
     }
+    // selectProfile: async (email) => {
+    //     const values = [email]
+
+    //     try {
+    //         console.time('redissave')
+    //         let user = await getRedis(`${email}`);
+    //         if (!user) {
+    //             console.time('databasesave')
+    //             const query = "SELECT * FROM users_table WHERE email = $1";
+    //             const response = await pool.query(query, values)
+    //             user = response.rows[0]
+    //             await setRedis(`${email}`, JSON.stringify(user))
+    //             console.timeEnd('databasesave')
+    //             return user;
+    //         }
+    //         console.timeEnd('redissave')
+    //         return JSON.parse(user)
+
+    //     } catch (err) {
+    //         throw err
+    //     }
+    // }
 
 }
 
