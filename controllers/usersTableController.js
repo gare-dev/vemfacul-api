@@ -14,6 +14,7 @@ const usersTableController = {
 
         try {
             const response = await usersTableModel.createAccount(password, email)
+            // adding cacheRedis
 
             if (response.rowCount >= 1) {
                 const token = jwt.sign(
@@ -319,11 +320,11 @@ const usersTableController = {
                     code: "USER_NOT_FOUND",
                     message: "usuario nao encontrado"
                 })
-
-            } catch (error) {
+            } catch (err) {
                 return res.status(500).json({
                     code: "DATABASE_ERROR",
-                    message: "error"
+                    message: 'Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.',
+                    err: err
                 })
             }
         }
