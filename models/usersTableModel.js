@@ -174,28 +174,6 @@ const usersTableModel = {
             throw err;
         }
     }
-    // selectProfile: async (email) => {
-    //     const values = [email]
-
-    //     try {
-    //         console.time('redissave')
-    //         let user = await getRedis(`${email}`);
-    //         if (!user) {
-    //             console.time('databasesave')
-    //             const query = "SELECT * FROM users_table WHERE email = $1";
-    //             const response = await pool.query(query, values)
-    //             user = response.rows[0]
-    //             await setRedis(`${email}`, JSON.stringify(user))
-    //             console.timeEnd('databasesave')
-    //             return user;
-    //         }
-    //         console.timeEnd('redissave')
-    //         return JSON.parse(user)
-
-    //     } catch (err) {
-    //         throw err
-    //     }
-    // }
 
 }
 

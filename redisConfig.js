@@ -6,11 +6,13 @@ client.on('error', err => {
     console.log('Procurando conexao', err)
 })
 try {
-    async function getRedis(key) {
-        return await client.get(key);
+    async function getRedis(key, array, index) {
+        const value = JSON.parse(await client.get(key));
+        if (!value) return null
+        return array ? value[index] : value;
     }
-    async function setRedis(key, value) {
-        return await client.set(key, value);
+    async function setRedis(key, value, timeExpiration) {
+        return await client.set(key, JSON.stringify(value), { EX: timeExpiration });
     }
 
     module.exports = {
