@@ -106,12 +106,6 @@ const usersTableController = {
                     code: "EMAIL_NOT_FOUND"
                 })
             }
-            // const resetToken = crypto.randomBytes(32).toString('hex');
-            // const { error } = await supabase
-            //     .from('password_resets')
-            //     .insert([
-            //         { email: destinatario, token: resetToken }
-            //     ]);
             sendForgotPasswordEmail(email)
             return res.status(200).json({
                 message: "Email enviado com sucesso!",
