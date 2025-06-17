@@ -56,7 +56,8 @@ const usersTableController = {
                     {
                         sameSite: "none",
                         secure: true,
-                        domain: ".vercel.app"
+                        domain: ".vercel.app",
+                        httpOnly: true
                     }).status(200).json({
                         message: "Login realizado com sucesso!",
                         code: "LOGIN_SUCCESS"
