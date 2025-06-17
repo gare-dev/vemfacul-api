@@ -56,7 +56,7 @@ const usersTableController = {
                     {
                         sameSite: "none",
                         secure: true,
-                        
+                        domain: "invest-liard.vercel.app",
                         httpOnly: true
                     }).status(200).json({
                         message: "Login realizado com sucesso!",
