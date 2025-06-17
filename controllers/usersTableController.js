@@ -52,7 +52,7 @@ const usersTableController = {
 
             if (response.rowCount >= 1) {
                 const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000 })
-                return res.cookie('auth', token, { sameSite: "none", secure: true, domain: ".vercel.app", }).status(200).json({
+                return res.cookie('auth', token, { sameSite: "none", secure: true, domain: "invest-api-rose.vercel.app", }).status(200).json({
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS"
                 })
