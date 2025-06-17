@@ -25,12 +25,6 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: process.env.DATABASE_URL
-  })
-})
-
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
 app.post('/api/forgotpassword', usersTableController.forgotPassword)
