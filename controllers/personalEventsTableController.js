@@ -94,7 +94,7 @@ const personalEventsTableController = {
 
             if (response.rowCount >= 1) {
                 return res.status(200).json({
-                    code: " ",
+                    code: "EVENT_ADDED",
                     message: "Evento adicionado na sua agenda pessoal."
                 })
             }
