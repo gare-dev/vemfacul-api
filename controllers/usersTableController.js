@@ -52,7 +52,7 @@ const usersTableController = {
         const { password, email } = req.body
 
         try {
-                      const response = await usersTableModel.loginAccount(email, password)
+            const response = await usersTableModel.loginAccount(email, password)
 
             if (response.rowCount >= 1) {
 
@@ -72,8 +72,6 @@ const usersTableController = {
                     code: "LOGIN_SUCCESS",
                     auth: token
                 })
-            }
-
             }
             return res.status(401).json({
                 message: "Email ou senha incorretos.",
