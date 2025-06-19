@@ -12,6 +12,28 @@ const postagensTableModel = {
             throw err;
         }
     },
+    // deletPostagem
+    // [more ...]
+    selectPostagem: async (username) => {
+        const values = [username]
+
+        try {
+            const query = `
+select
+    p.content,
+    u.username
+from
+    postagens_table p
+    join users_table u on p.id_user = u.id_user
+where 
+    u.username like $1
+`
+            console.log(query, values)
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
     likePostagem: async (id_postagem, id_user) => {
         const values = [id_postagem, id_user]
 

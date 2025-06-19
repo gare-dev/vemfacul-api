@@ -51,6 +51,7 @@ app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { nam
 app.post('/api/getprofileinfo', usersTableController.getProfileInfo)
 app.post('/api/validateprofile', usersTableController.validateProfile)
 app.post('/api/createPostagem', postagensTableController.createPostagem);
+app.post('/api/postagens/:username', postagensTableController.getPostagem)
 app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
 app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
 
