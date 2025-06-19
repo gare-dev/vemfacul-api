@@ -46,6 +46,7 @@ app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
 app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
 app.post('/api/createPostagem', postagensTableController.createPostagem);
+app.post('/api/postagens/:username', postagensTableController.getPostagem)
 app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
 app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
 
