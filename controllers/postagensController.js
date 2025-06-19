@@ -17,11 +17,14 @@ const postagensController = {
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Post criado com sucesso",
-                    data: `post criado por: ${user_id}`
+                    data: `post criado por: ${user_id}`,
+                    code: "POSTAGEM_SUCESS"
                 })
             } else {
                 return res.status(400).json({
-                    message: "erro ao criar o post"
+                    message: "erro ao criar o post",
+                    code: "POSTAGEM_ERROR"
+
                 })
             }
         } catch (error) {
@@ -34,6 +37,32 @@ const postagensController = {
 
     // deletPostagem
     // [more ...]
+    getPostagem: async (req, res) => {
+        const { username } = req.params
+        
+
+        try {
+            const response = await postagensTableModel.selectPostagem(username)
+
+            if(response.rowCount >= 1){
+                res.status(200).json({
+                    message: "Postagens encontradas com sucesso!",
+                    code: "POSTAGENS_FOUND",
+                    postagens: response.rows
+                })
+            } else {
+                res.status(400).json({
+                    message: "Usuario nao encontrado!",
+                    code: "USER_NOTFOUND"
+                })
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            })
+        }
+    },
 
     likePostagem: async (req, res) => {
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
@@ -47,11 +76,14 @@ const postagensController = {
 
             if (response.rowCount >= 1) {
                 return res.status(200).json({
-                    message: "postagem curtida com sucesso!"
+                    message: "postagem curtida com sucesso!",
+                    code: "POST_LIKED"
                 })
             } else {
                 return res.status(400).json({
-                    message: "Usuário já curtiu essa postagem"
+                    message: "Usuário já curtiu essa postagem",
+                    code: "POST_ALREDYLIKED"
+
                 })
             }
         } catch (error) {
@@ -73,7 +105,9 @@ const postagensController = {
 
             if (response.rowCount >= 1) {
                 return res.status(200).json({
-                    message: "Like removido!"
+                    message: "Like removido!",
+                    code: "UNLIKED_SUCESS"
+
                 })
             } else {
                 return res.status(400).json({
