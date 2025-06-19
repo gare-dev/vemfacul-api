@@ -6,6 +6,7 @@ const upload = require("./config/multer");
 const cookieParser = require("cookie-parser");
 const eventsTableController = require("./controllers/eventsTableController");
 const personalEventsTableController = require("./controllers/personalEventsTableController");
+const postagensTableController = require('./controllers/postagensController');
 
 
 const app = express();
@@ -44,6 +45,10 @@ app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocal
 app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
 app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
+app.post('/api/createPostagem', postagensTableController.createPostagem);
+app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
+app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
+
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);
