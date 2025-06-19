@@ -1,24 +1,37 @@
-const redisbli = require('redis');
-const client = redisbli.createClient();
-client.connect();
+// lib/redis.js
+const { createClient } = require('redis');
 
-client.on('error', err => {
-    console.log('Procurando conexao', err)
-})
-try {
-    async function getRedis(key, array, index) {
-        const value = JSON.parse(await client.get(key));
-        if (!value) return null
-        return array ? value[index] : value;
-    }
-    async function setRedis(key, value, timeExpiration) {
-        return await client.set(key, JSON.stringify(value), { EX: timeExpiration });
-    }
+let client;
 
-    module.exports = {
-        getRedis,
-        setRedis
-    }
-} catch (err) {
-    throw err;
+async function getClient() {
+  if (!client) {
+    client = createClient({
+      url: process.env.REDIS_URL // variável de ambiente da Vercel
+    });
+
+    client.on('error', (err) => {
+      console.error('Redis connection error:', err);
+    });
+
+    await client.connect();
+  }
+
+  return client;
 }
+
+async function getRedis(key, array, index) {
+  const client = await getClient();
+  const value = JSON.parse(await client.get(key));
+  if (!value) return null;
+  return array ? value[index] : value;
+}
+
+async function setRedis(key, value, timeExpiration) {
+  const client = await getClient();
+  return await client.set(key, JSON.stringify(value), { EX: timeExpiration });
+}
+
+module.exports = {
+  getRedis,
+  setRedis,
+};
