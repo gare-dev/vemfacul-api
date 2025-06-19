@@ -175,6 +175,17 @@ const usersTableModel = {
         } catch (err) {
             throw err;
         }
+    },
+
+    getProfileInfo: async (id_user) => {
+        const values = [id_user]
+
+        try {
+            const query = "SELECT nome, username, foto FROM users_table WHERE id_user = $1"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
     }
 
 }

@@ -6,6 +6,8 @@ const upload = require("./config/multer");
 const cookieParser = require("cookie-parser");
 const eventsTableController = require("./controllers/eventsTableController");
 const personalEventsTableController = require("./controllers/personalEventsTableController");
+const missAuth = require("./middleware/missauth");
+const getSession = require("./middleware/getsession");
 
 
 const app = express();
@@ -25,25 +27,26 @@ app.use(cors({
   ]
 }));
 
-
-
+app.post('/api/getevents', eventsTableController.getEvents)
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
 app.post('/api/forgotpassword', usersTableController.forgotPassword)
 app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
+
+app.use(missAuth)
+app.use(getSession)
+
 app.post('/api/createevent', upload.single("imagem"), eventsTableController.createEvent)
-app.post('/api/getevents', eventsTableController.getEvents)
 app.post('/api/insertpevennts', personalEventsTableController.insertPersonalEvent)
 app.post('/api/getpevents', personalEventsTableController.getPersonalEvents)
 app.post('/api/insertpelocal', personalEventsTableController.insertPersonalLocalEvent)
 app.post('/api/deletepevents', personalEventsTableController.deletePersonalEvent)
 app.post('/api/getuserprofile', usersTableController.getUserProfile)
-app.get('/api/deptest', (req, res) => {
-  res.send(process.env.DATABASE_URL)
-})
 app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
+app.post('/api/getprofileinfo', usersTableController.getProfileInfo)
+app.post('/api/validateprofile', usersTableController.validateProfile)
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const getDecodedJwt = require("../utils/getDecodedJwt");
 
 const personalEventsTableModel = require("../models/personalEventsTableModel");
 
@@ -17,10 +18,8 @@ const personalEventsTableController = {
             color,
             main_title,
         } = req.body;
-        const token = req.cookies.auth
-        const secret = process.env.SECRET;
-        const decoded = jwt.verify(token, secret);
-        const idUser = decoded.id
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const idUser = token.id
 
         try {
             const response = await personalEventsTableModel.insertPersonalEvent(idUser, day, month, year, title, cursinho, descricao, foto, link, type, color, main_title)
@@ -49,10 +48,8 @@ const personalEventsTableController = {
     },
 
     getPersonalEvents: async (req, res) => {
-        const token = req.cookies.auth
-        const secret = process.env.SECRET;
-        const decoded = jwt.verify(token, secret);
-        const idUser = decoded.id
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const idUser = token.id
 
         try {
             const response = await personalEventsTableModel.getPersonalEvents(idUser)
@@ -84,10 +81,8 @@ const personalEventsTableController = {
             hora,
             isImportant
         } = req.body;
-        const token = req.cookies.auth
-        const secret = process.env.SECRET;
-        const decoded = jwt.verify(token, secret);
-        const idUser = decoded.id
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const idUser = token.id
 
         try {
             const response = await personalEventsTableModel.insertPersonalLocalEvent(idUser, day, month, year, title, descricao, color, main_title, hora, isImportant)
@@ -117,10 +112,8 @@ const personalEventsTableController = {
 
     deletePersonalEvent: async (req, res) => {
         const { id_pevent } = req.body;
-        const token = req.cookies.auth
-        const secret = process.env.SECRET;
-        const decoded = jwt.verify(token, secret);
-        const idUser = decoded.id
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const idUser = token.id
 
         try {
             const response = await personalEventsTableModel.deletePersonalEvent(idUser, id_pevent)
