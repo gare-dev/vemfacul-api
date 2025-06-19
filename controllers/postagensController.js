@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const supabase = require("../config/supabaseClient")
 const postagensTableModel = require("../models/postagensTableModel");
+const getDecodedJwt = require("../utils/getDecodedJwt")
 
 
 const postagensController = {
@@ -17,14 +18,11 @@ const postagensController = {
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Post criado com sucesso",
-                    data: `post criado por: ${user_id}`,
-                    code: "POSTAGEM_SUCESS"
+                    data: `post criado por: ${user_id}`
                 })
             } else {
                 return res.status(400).json({
-                    message: "erro ao criar o post",
-                    code: "POSTAGEM_ERROR"
-
+                    message: "erro ao criar o post"
                 })
             }
         } catch (error) {
@@ -37,32 +35,6 @@ const postagensController = {
 
     // deletPostagem
     // [more ...]
-    getPostagem: async (req, res) => {
-        const { username } = req.params
-        
-
-        try {
-            const response = await postagensTableModel.selectPostagem(username)
-
-            if(response.rowCount >= 1){
-                res.status(200).json({
-                    message: "Postagens encontradas com sucesso!",
-                    code: "POSTAGENS_FOUND",
-                    postagens: response.rows
-                })
-            } else {
-                res.status(400).json({
-                    message: "Usuario nao encontrado!",
-                    code: "USER_NOTFOUND"
-                })
-            }
-        } catch (error) {
-            res.status(500).json({
-                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
-                error: error.toString(),
-            })
-        }
-    },
 
     likePostagem: async (req, res) => {
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
@@ -76,14 +48,11 @@ const postagensController = {
 
             if (response.rowCount >= 1) {
                 return res.status(200).json({
-                    message: "postagem curtida com sucesso!",
-                    code: "POST_LIKED"
+                    message: "postagem curtida com sucesso!"
                 })
             } else {
                 return res.status(400).json({
-                    message: "Usuário já curtiu essa postagem",
-                    code: "POST_ALREDYLIKED"
-
+                    message: "Usuário já curtiu essa postagem"
                 })
             }
         } catch (error) {
@@ -105,9 +74,7 @@ const postagensController = {
 
             if (response.rowCount >= 1) {
                 return res.status(200).json({
-                    message: "Like removido!",
-                    code: "UNLIKED_SUCESS"
-
+                    message: "Like removido!"
                 })
             } else {
                 return res.status(400).json({
