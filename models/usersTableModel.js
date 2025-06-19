@@ -4,7 +4,6 @@ const cryptr = require("../cryptr/cryptr")
 const multer = require("multer")
 
 
-
 const usersTableModel = {
     createAccount: async (password, email) => {
         const values = [password, email]
@@ -67,13 +66,12 @@ const usersTableModel = {
     },
 
     loginAccount: async (email, password) => {
-        const values = [password, email]
-
+        const values = [password, email];
         try {
-            const query = "SELECT * FROM users_table WHERE senha = $1 AND email = $2"
-            return await pool.query(query, values)
+            const query = "SELECT * FROM users_table WHERE senha = $1 AND email = $2";
+            return await pool.query(query, values);
         } catch (err) {
-            throw err
+            throw err;
         }
     },
     checkAccount: async (email) => {

@@ -5,6 +5,8 @@ const sendForgotPasswordEmail = require("../smtp/forgotPasswordAccount")
 const crypto = require("crypto")
 const jwt = require("jsonwebtoken")
 const supabase = require("../config/supabaseClient")
+const { getRedis, setRedis } = require("../redisConfig")
+
 
 
 const usersTableController = {
@@ -47,28 +49,26 @@ const usersTableController = {
         const { password, email } = req.body
 
         try {
+
             const response = await usersTableModel.loginAccount(email, password)
 
-
             if (response.rowCount >= 1) {
-                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000, })
-                return res.cookie('auth', token,
-                    {
-                        sameSite: "none",
-                        secure: true,
-                        domain: "invest-liard.vercel.app",
-                        httpOnly: true
-                    }).status(200).json({
-                        message: "Login realizado com sucesso!",
-                        code: "LOGIN_SUCCESS"
-                    })
-            }
+                const user = response.rows[0];
+                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000 })
+                await getRedis(email) ? console.log('alredy cahced') : await setRedis(email, [
+                    JSON.stringify(user),
+                    `user-token: ${token}`]);
+                // console.log(user)
+                return res.cookie('auth', token).status(200).json({
+                    message: "Login realizado com sucesso!",
+                    code: "LOGIN_SUCCESS",
+                })
 
+            }
             return res.status(401).json({
                 message: "Email ou senha incorretos.",
-                code: "INVALID_EMAIL_OR_PASSWORD"
+                code: "INVALID_EMAIL_OR_PASSWORD",
             })
-
         } catch (error) {
             return res.status(500).json({
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
@@ -107,12 +107,6 @@ const usersTableController = {
                     code: "EMAIL_NOT_FOUND"
                 })
             }
-            // const resetToken = crypto.randomBytes(32).toString('hex');
-            // const { error } = await supabase
-            //     .from('password_resets')
-            //     .insert([
-            //         { email: destinatario, token: resetToken }
-            //     ]);
             sendForgotPasswordEmail(email)
             return res.status(200).json({
                 message: "Email enviado com sucesso!",
