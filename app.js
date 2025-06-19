@@ -12,6 +12,9 @@ const postagensTableController = require('./controllers/postagensController');
 const app = express();
 const PORT = 3001;
 
+app.use(cookieParser());
+app.use(express.json());
+
 app.use(cors({
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -19,17 +22,11 @@ app.use(cors({
     "http://localhost:3000",
     "http://localhost:3001",
     "http://localhost:3002",
+    "https://invest-liard.vercel.app"
   ]
 }));
 
-app.use(cookieParser());
-app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: process.env.DATABASE_URL
-  })
-})
 
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)

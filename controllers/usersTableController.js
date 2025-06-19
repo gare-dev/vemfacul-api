@@ -63,6 +63,7 @@ const usersTableController = {
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS",
                 })
+
             }
             return res.status(401).json({
                 message: "Email ou senha incorretos.",
