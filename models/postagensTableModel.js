@@ -17,7 +17,7 @@ const postagensTableModel = {
 
         try {
             const query = "INSERT INTO postagensLike_table (id_postagem, id_user)  VALUES ($1, $2) ON CONFLICT DO NOTHING"
-            console.log('query', query, values)
+            return pool.query(query, values)
         } catch (err) {
             throw err;
         }
