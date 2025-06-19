@@ -2,23 +2,22 @@ const jwt = require('jsonwebtoken');
 const supabase = require("../config/supabaseClient")
 const postagensTableModel = require("../models/postagensTableModel");
 
+
 const postagensController = {
     createPostagem: async (req, res) => {
         const { content } = req.body;
 
-        const token = req.cookies.auth
-        const secret = process.env.secret
-        const decoded = jwt.verify(token, secret)
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
 
-        const user_id = decoded.id
-        const user_email = decoded.email
+
+        const user_id = token.id
 
         try {
             const response = await postagensTableModel.createPostagem(user_id, content)
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Post criado com sucesso",
-                    data: `post criado por: ${user_email}`,
+                    data: `post criado por: ${user_id}`,
                     code: "POSTAGEM_SUCESS"
                 })
             } else {
@@ -66,12 +65,11 @@ const postagensController = {
     },
 
     likePostagem: async (req, res) => {
-        const token = req.cookies.auth
-        const secret = process.env.SECRET
-        const decoded = jwt.verify(token, secret)
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+
 
         const id_postagem = req.params.id
-        const id_user = decoded.id
+        const id_user = token.id
 
         try {
             const response = await postagensTableModel.likePostagem(id_postagem, id_user)
@@ -96,12 +94,11 @@ const postagensController = {
         }
     },
     unlikePostagem: async (req, res) => {
-        const token = req.cookies.auth
-        const secret = process.env.SECRET
-        const decoded = jwt.verify(token, secret)
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+
 
         const id_postagem = req.params.id;
-        const id_user = decoded.id
+        const id_user = token.id
 
         try {
             const response = await postagensTableModel.unlikePostagem(id_postagem, id_user)

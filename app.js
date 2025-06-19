@@ -14,9 +14,6 @@ const postagensTableController = require('./controllers/postagensController');
 const app = express();
 const PORT = 3001;
 
-app.use(cookieParser());
-app.use(express.json());
-
 app.use(cors({
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -27,6 +24,11 @@ app.use(cors({
     "https://invest-liard.vercel.app"
   ]
 }));
+
+
+app.use(cookieParser());
+app.use(express.json());
+
 
 app.post('/api/getevents', eventsTableController.getEvents)
 app.post('/api/createaccount', usersTableController.createAccount)
