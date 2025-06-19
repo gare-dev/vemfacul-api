@@ -8,6 +8,7 @@ const eventsTableController = require("./controllers/eventsTableController");
 const personalEventsTableController = require("./controllers/personalEventsTableController");
 const missAuth = require("./middleware/missauth");
 const getSession = require("./middleware/getsession");
+const postagensTableController = require('./controllers/postagensController');
 
 
 const app = express();
@@ -47,6 +48,10 @@ app.post('/api/getuserprofile', usersTableController.getUserProfile)
 app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), usersTableController.editProfile)
 app.post('/api/getprofileinfo', usersTableController.getProfileInfo)
 app.post('/api/validateprofile', usersTableController.validateProfile)
+app.post('/api/createPostagem', postagensTableController.createPostagem);
+app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
+app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
+
 
 app.listen(PORT, () => {
   console.log(`Server is now running on port ${PORT}`);

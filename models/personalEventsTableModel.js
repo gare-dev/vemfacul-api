@@ -46,8 +46,6 @@ const personalEventsTableModel = {
         } catch (err) {
             throw err
         }
-
-
     }
 }
 

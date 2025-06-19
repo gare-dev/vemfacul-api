@@ -10,6 +10,8 @@ const getDecodedJwt = require("../utils/getDecodedJwt")
 const { set } = require("../config/smtp")
 
 
+
+
 const usersTableController = {
     createAccount: async (req, res) => {
         const { password, email } = req.body
@@ -50,7 +52,7 @@ const usersTableController = {
         const { password, email } = req.body
 
         try {
-            const response = await usersTableModel.loginAccount(email, password)
+                      const response = await usersTableModel.loginAccount(email, password)
 
             if (response.rowCount >= 1) {
 
@@ -72,11 +74,11 @@ const usersTableController = {
                 })
             }
 
+            }
             return res.status(401).json({
                 message: "Email ou senha incorretos.",
-                code: "INVALID_EMAIL_OR_PASSWORD"
+                code: "INVALID_EMAIL_OR_PASSWORD",
             })
-
         } catch (error) {
             return res.status(500).json({
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
@@ -153,12 +155,6 @@ const usersTableController = {
                     code: "EMAIL_NOT_FOUND"
                 })
             }
-            // const resetToken = crypto.randomBytes(32).toString('hex');
-            // const { error } = await supabase
-            //     .from('password_resets')
-            //     .insert([
-            //         { email: destinatario, token: resetToken }
-            //     ]);
             sendForgotPasswordEmail(email)
             return res.status(200).json({
                 message: "Email enviado com sucesso!",
