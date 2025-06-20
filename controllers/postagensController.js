@@ -18,6 +18,7 @@ const postagensController = {
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Post criado com sucesso",
+                    code: "POSTAGEM_SUCESS",
                     data: `post criado por: ${user_id}`
                 })
             } else {
@@ -44,8 +45,8 @@ const postagensController = {
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Postagens encontradas",
-                    code: "POSTAGEM_FOUND",
-                    postagens: response.rows
+                    code: "POSTAGENS_FOUND",
+                    postagens: response.rows,
                 })
             } else {
                 return res.status(400).json({

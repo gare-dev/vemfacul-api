@@ -21,12 +21,15 @@ const postagensTableModel = {
             const query = `
 select
     p.content,
+    p.created_at,
     u.username
 from
     postagens_table p
     join users_table u on p.id_user = u.id_user
 where 
     u.username like $1
+order by
+    p.id_postagem desc
 `
             console.log(query, values)
             return await pool.query(query, values)
