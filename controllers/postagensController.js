@@ -35,6 +35,31 @@ const postagensController = {
 
     // deletPostagem
     // [more ...]
+    getPostagem: async (req, res) => {
+        const username = req.params.username
+
+        try {
+            const response = await postagensTableModel.selectPostagem(username)
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Postagens encontradas",
+                    code: "POSTAGEM_FOUND",
+                    postagens: response.rows
+                })
+            } else {
+                return res.status(400).json({
+                    message: "Usuario não encontrado",
+                    code: "POSTAGEM_NOT_FOUND"
+                })
+            }
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            })
+        }
+    },
 
     likePostagem: async (req, res) => {
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
