@@ -6,7 +6,7 @@ let client;
 async function getClient() {
   if (!client) {
     client = createClient({
-      url: process.env.REDIS_URL // variável de ambiente da Vercel
+      url: process.env.REDIS_URL 
     });
 
     client.on('error', (err) => {

@@ -10,7 +10,6 @@ const postagensController = {
 
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
 
-
         const user_id = token.id
 
         try {
