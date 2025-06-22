@@ -22,7 +22,8 @@ const postagensController = {
                 })
             } else {
                 return res.status(400).json({
-                    message: "erro ao criar o post"
+                    message: "Erro ao criar o post",
+                    code: "POSTAGEM_ERROR"
                 })
             }
         } catch (error) {
