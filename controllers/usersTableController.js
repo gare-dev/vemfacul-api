@@ -5,7 +5,10 @@ const sendForgotPasswordEmail = require("../smtp/forgotPasswordAccount")
 const crypto = require("crypto")
 const jwt = require("jsonwebtoken")
 const supabase = require("../config/supabaseClient")
-const { getRedis, setRedis } = require("../redisConfig")
+const { setRedis, getRedis } = require("../config/redisConfig")
+const getDecodedJwt = require("../utils/getDecodedJwt")
+const { set } = require("../config/smtp")
+
 
 
 
@@ -49,19 +52,25 @@ const usersTableController = {
         const { password, email } = req.body
 
         try {
-
             const response = await usersTableModel.loginAccount(email, password)
 
             if (response.rowCount >= 1) {
-                const user = response.rows[0];
-                const token = jwt.sign({ email: email, image: response.rows[0].foto, name: response.rows[0].nome, id: response.rows[0].id_user, username: response.rows[0].username }, process.env.SECRET, { expiresIn: 36000 })
-                await getRedis(email) ? console.log('alredy cahced') : await setRedis(email, [
-                    JSON.stringify(user),
-                    `user-token: ${token}`]);
-                // console.log(user)
-                return res.cookie('auth', token).status(200).json({
+
+                const id_user = response.rows[0].id_user
+                const nome = response.rows[0].nome
+                const username = response.rows[0].username
+                const token = jwt.sign(
+                    { id: id_user, email: email },
+                    process.env.SECRET,
+                    {
+                        expiresIn: 2 * 24 * 60 * 60
+                    }
+                )
+                await setRedis(`user_${id_user}`, { id: id_user, email: email, nome: nome, username: username }, 2 * 24 * 60 * 60)
+                return res.status(200).json({
                     message: "Login realizado com sucesso!",
                     code: "LOGIN_SUCCESS",
+                    auth: token
                 })
             }
             return res.status(401).json({
@@ -74,6 +83,44 @@ const usersTableController = {
                 error: error.toString()
             })
         }
+    },
+
+    getProfileInfo: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+
+        try {
+            if (getRedis(`user_profile_${token.id}`)) {
+                const cachedProfile = await getRedis(`user_profile_${token.id}`);
+                if (cachedProfile) {
+                    console.log("Cache hit for user profile")
+                    return res.status(200).json({
+                        code: "PROFILE_INFO",
+                        data: cachedProfile
+                    });
+                }
+            }
+
+            const response = await usersTableModel.getProfileInfo(token.id)
+
+            if (response.rowCount >= 1) {
+                await setRedis(`user_profile_${token.id}`, response.rows[0], 2 * 24 * 60 * 60)
+                console.log("Cache set for user profile")
+                return res.status(200).json({
+                    code: "PROFILE_INFO",
+                    data: response.rows[0]
+                })
+            }
+
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString()
+            })
+        }
+
+
+
     },
 
     confirmAccount: async (req, res) => {
@@ -247,11 +294,8 @@ const usersTableController = {
 
     chageUserPhoto: async (req, res) => {
         const photo = req.file;
-        const token = req.cookies.auth
-        const secret = process.env.SECRET;
-        const decoded = jwt.verify(token, secret);
-        const email = decoded.email
-        const id = decoded.id
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id = token.id
 
         const uploadPhoto = async (photo) => {
             const filePath = `images/${Date.now()}_${photo.originalname}_${email}`;
@@ -286,7 +330,14 @@ const usersTableController = {
                 fotoUrl = await uploadPhoto(photo);
 
                 try {
-                    await usersTableModel.changeUserPhoto(fotoUrl, id)
+                    const response = await usersTableModel.changeUserPhoto(fotoUrl, id)
+                    if (response.rowCount >= 1) {
+                        await setRedis(`user_profile_${id}`, null, 60 * 60); // Invalidate cache
+                        return res.status(200).json({
+                            message: "Foto atualizada com sucesso!",
+                            code: "PHOTO_UPDATED"
+                        });
+                    }
                 } catch (error) {
                     throw new Error("Erro ao atualizar foto." + error)
                 }
@@ -304,12 +355,10 @@ const usersTableController = {
         try {
             const userData = JSON.parse(req.body.userData);
             const { name, descricao } = userData;
-            const token = req.cookies.auth;
-            const secret = process.env.SECRET;
+            const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
 
-            const decoded = jwt.verify(token, secret);
-            const email = decoded.email;
-            const id = decoded.id;
+            const email = token.email;
+            const id = token.id;
 
             const foto = req.files?.['foto'];
             const header = req.files?.['header'];
@@ -339,7 +388,6 @@ const usersTableController = {
                 const { data: publicUrlData } = supabase.storage
                     .from("users-photos")
                     .getPublicUrl(filePath);
-
                 return publicUrlData.publicUrl;
             };
 
@@ -359,8 +407,8 @@ const usersTableController = {
 
             const response = await usersTableModel.editProfileDynamic(updateFields, id);
 
-
             if (response.rowCount >= 1) {
+                await setRedis(`user_profile_${id}`, null, 60 * 60); // Invalidate cache
                 return res.status(200).json({
                     message: "Perfil editado com sucesso!",
                     code: "PROFILE_EDITED",
@@ -374,6 +422,32 @@ const usersTableController = {
         } catch (error) {
             return res.status(500).json({
                 message: "Estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    },
+
+    validateProfile: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id = token.id
+
+        try {
+            if (await getRedis(`user_${id}`)) {
+                const cachedUser = await getRedis(`user_${id}`);
+                if (cachedUser) {
+                    return res.status(200).json({
+                        code: "PROFILE_VALIDATED",
+                        data: {
+                            nome: cachedUser.nome,
+                            username: cachedUser.username,
+                        }
+                    });
+                }
+            }
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
                 error: error.toString(),
             });
         }
