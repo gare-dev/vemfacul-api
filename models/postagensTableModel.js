@@ -20,6 +20,7 @@ const postagensTableModel = {
         try {
             const query = `
 select
+    p.id_postagem,      
     p.content,
     p.created_at,
     u.username
@@ -31,7 +32,6 @@ where
 order by
     p.id_postagem desc
 `
-            console.log(query, values)
             return await pool.query(query, values)
         } catch (err) {
             throw err
@@ -52,6 +52,34 @@ order by
 
         try {
             const query = "DELETE FROM postagensLike_table WHERE id_postagem = $1 AND id_user = $2"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err;
+        }
+    },
+    getLikesCout: async (id_postagem) => {
+        const values = [id_postagem]
+
+        try {
+            const query = `
+select
+  (
+    select
+      count(*)
+    from
+      postagenslike_table l
+    where
+      p.id_postagem = l.id_postagem
+  ) as like_count
+from
+  postagenslike_table l
+  join postagens_table p on p.id_postagem = l.id_postagem
+  join users_table u on p.id_user = u.id_user
+  and l.id_user = u.id_user
+where 
+p.id_postagem = $1
+            `
+
             return await pool.query(query, values)
         } catch (err) {
             throw err;

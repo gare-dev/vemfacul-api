@@ -38,6 +38,7 @@ app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
 app.post('/api/postagens/:username', postagensTableController.getPostagem)
+app.post('/api/likePostagem/countlikes', postagensTableController.getLikesCount)
 
 app.use(missAuth)
 app.use(getSession)
