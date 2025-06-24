@@ -37,6 +37,8 @@ app.post('/api/forgotpassword', usersTableController.forgotPassword)
 app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
+app.post('/api/postagens/:username', postagensTableController.getPostagem)
+app.post('/api/likePostagem/countlikes', postagensTableController.getLikesCount)
 
 app.use(missAuth)
 app.use(getSession)
@@ -51,9 +53,9 @@ app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { nam
 app.post('/api/getprofileinfo', usersTableController.getProfileInfo)
 app.post('/api/validateprofile', usersTableController.validateProfile)
 app.post('/api/createPostagem', postagensTableController.createPostagem);
-// app.post('/api/postagens/:username', postagensTableController.getPostagem)
 app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
 app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
+app.post('/api/selectposts', postagensTableController.selectAllPosts)
 
 
 app.listen(PORT, () => {
