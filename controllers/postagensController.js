@@ -144,6 +144,30 @@ const postagensController = {
                 error: error.toString()
             })
         }
+    },
+
+    selectAllPosts: async (req, res) => {
+        try {
+            const response = await postagensTableModel.selectAllPosts()
+
+            if (response.rowCount >= 1) {
+                return res.status(200).json({
+                    message: "Postagens encontradas",
+                    code: "POSTAGENS_FOUND",
+                    postagens: response.rows
+                })
+            } else {
+                return res.status(400).json({
+                    message: "Nenhuma postagem encontrada",
+                    code: "POSTAGEM_NOT_FOUND"
+                })
+            }
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            })
+        }
     }
 
 }
