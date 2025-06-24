@@ -607,7 +607,7 @@ const createAccountHtml = (link) => {
                   style="display: block; background-color: #001ecb"
                  >
                   <a
-                   href="http://localhost:3000/confirmarConta/${link}"
+                   href="https://invest-liard.vercel.app/confirmarConta/${link}"
                    style="
                     color: #ffffff;
                     display: block;
