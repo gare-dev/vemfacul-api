@@ -55,6 +55,7 @@ app.post('/api/validateprofile', usersTableController.validateProfile)
 app.post('/api/createPostagem', postagensTableController.createPostagem);
 app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
 app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
+app.post('/api/selectposts', postagensTableController.selectAllPosts)
 
 
 app.listen(PORT, () => {

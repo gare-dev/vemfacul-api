@@ -1,5 +1,4 @@
 const { getRedis } = require("../config/redisConfig");
-const { get } = require("../config/smtp");
 const getDecodedJwt = require("../utils/getDecodedJwt");
 
 
