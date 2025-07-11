@@ -30,11 +30,11 @@ app.use(cookieParser());
 app.use(express.json());
 
 
+app.post('/api/forgotpassword', usersTableController.forgotPassword)
+app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/getevents', eventsTableController.getEvents)
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
-app.post('/api/forgotpassword', usersTableController.forgotPassword)
-app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
 app.post('/api/postagens/:username', postagensTableController.getPostagem)

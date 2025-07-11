@@ -492,7 +492,7 @@ const forgotPasswordHtml = (email) => {
                 padding-bottom: 30px;
                "
               >
-               Olá, ${email}!
+               Olá!
               </td>
              </tr>
              <tr>
