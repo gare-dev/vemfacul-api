@@ -46,11 +46,22 @@ ORDER BY
             throw err
         }
     },
+    alredyLike: async (id_postagem, id_user) => {
+        const valuler = [id_postagem, id_user]
+        try {
+            const query = "SELECT 1 from postagenslike_table WHERE id_postagem = $1 AND id_user = $2"
+            const result = await pool.query(query, valuler)
+            return result
+        } catch (err) {
+            throw err;
+        }
+    },
     likePostagem: async (id_postagem, id_user) => {
         const values = [id_postagem, id_user]
 
         try {
             const query = "INSERT INTO postagensLike_table (id_postagem, id_user)  VALUES ($1, $2) ON CONFLICT DO NOTHING"
+            console.log("POSTAGEM CURTIDA COM SUCESSO")
             return pool.query(query, values)
         } catch (err) {
             throw err;
@@ -61,6 +72,7 @@ ORDER BY
 
         try {
             const query = "DELETE FROM postagensLike_table WHERE id_postagem = $1 AND id_user = $2"
+            console.log("POSTAGEM DESCURTIDA COM SUCESSO")
             return await pool.query(query, values)
         } catch (err) {
             throw err;
