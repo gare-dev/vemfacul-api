@@ -65,7 +65,6 @@ const postagensController = {
     likePostagem: async (req, res) => {
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
 
-
         const id_postagem = req.params.id //mudar a lógica (não posso passar o id pelo router)
         const id_user = token.id
 

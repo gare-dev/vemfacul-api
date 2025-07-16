@@ -8,6 +8,7 @@ const cursinhosTableController = {
         const data = JSON.parse(req.body.data);
         const { instituicao, endereco, academico, financeiro, imagens, login } = data
         const { rua, numero, bairro, cidade, cep, estado, uf, regiao } = endereco;
+        const { descricao } = imagens
         const { diferenciais, disciplinasFoco, mediaAlunosPorTurma, modalidades } = academico;
         const { faixaPreco, temBolsa, aceitaProgramasPublicos } = financeiro;
         const { cnpj, emailContato, nome, nomeExibido, representanteLegal, site, telefone } = instituicao
@@ -17,7 +18,7 @@ const cursinhosTableController = {
 
         try {
             const id_endereco = await insertCursinhoEndereco(rua, numero, bairro, cidade, cep, estado, uf, regiao);
-            const id_cinfo = await insertCursinhoInfo(modalidades, disciplinasFoco, mediaAlunosPorTurma, diferenciais, faixaPreco, temBolsa, aceitaProgramasPublicos, instituicao.descricao, logo, imgs, nomeExibido);
+            const id_cinfo = await insertCursinhoInfo(modalidades, disciplinasFoco, mediaAlunosPorTurma, diferenciais, faixaPreco, temBolsa, aceitaProgramasPublicos, descricao, logo, imgs, nomeExibido);
             const cursinhoInserted = await insertCursinho(id_endereco, id_cinfo, nome, nomeExibido, cnpj, representanteLegal, emailContato, telefone, site);
 
             if (cursinhoInserted) {
@@ -36,6 +37,63 @@ const cursinhosTableController = {
             });
         }
     },
+
+    selectAdminCursinhos: async (req, res) => {
+        try {
+            const result = await cursinhosTableModel.selectAdminCursinhos();
+
+
+            if (result.rowCount > 0) {
+                return res.status(200).json({
+                    message: "Cursinhos selecionados com sucesso!",
+                    code: "CURSINHOS_SELECTED",
+                    data: result.rows
+                });
+            }
+
+            return res.status(404).json({
+                message: "Nenhum cursinho encontrado.",
+                code: "NO_CURSINHOS_FOUND"
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    },
+
+    aproveAdminCursinho: async (req, res) => {
+        const id_cursinho = req.params.id_cursinho;
+
+        if (!id_cursinho) {
+            return res.status(400).json({
+                message: "ID do cursinho não fornecido.",
+                code: "MISSING_CURSINHO_ID"
+            });
+        }
+
+        try {
+            const result = await cursinhosTableModel.aproveAdminCursinho(id_cursinho);
+
+            if (result.rowCount > 0) {
+                return res.status(200).json({
+                    message: "Cursinho aprovado com sucesso!",
+                    code: "CURSINHO_APPROVED"
+                });
+            }
+
+            return res.status(404).json({
+                message: "Cursinho não encontrado.",
+                code: "CURSINHO_NOT_FOUND"
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            });
+        }
+    }
 }
 
 async function insertCursinhoEndereco(rua, numero, bairro, cidade, cep, estado, uf, regiao) {
