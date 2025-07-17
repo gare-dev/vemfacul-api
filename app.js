@@ -37,8 +37,10 @@ app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
-app.post('/api/postagens/:username', postagensTableController.getPostagem)
+app.post('/api/postagens/usuario/:username', postagensTableController.getPostagem)
+app.post('/api/postagens/unica/:id_postagem', postagensTableController.getSinglePostagem)
 app.post('/api/likePostagem/countlikes', postagensTableController.getLikesCount)
+app.post('/api/coments', postagensTableController.selectComent)
 
 app.use(missAuth)
 app.use(getSession)
@@ -56,6 +58,7 @@ app.post('/api/createPostagem', postagensTableController.createPostagem);
 app.post('/api/likePostagem/like', postagensTableController.likePostagem)
 app.post('/api/likePostagem/unlike', postagensTableController.unlikePostagem)
 app.post('/api/selectposts', postagensTableController.selectAllPosts)
+app.post('/api/coments/create', postagensTableController.createComent)
 
 
 app.listen(PORT, () => {

@@ -35,11 +35,41 @@ FROM
 JOIN
     users_table u ON p.id_user = u.id_user
 WHERE
-    u.username LIKE $1
+    u.username LIKE $1 AND coments = false
 ORDER BY
     p.id_postagem DESC;
 
    
+`
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+    selectSinglePostagem: async (id_postagem) => {
+        const values = [id_postagem]
+
+        try {
+            const query = `
+SELECT
+    p.id_postagem,
+    p.content,
+    p.created_at,
+    u.username,
+    u.id_user,
+    u.foto,
+    (
+        SELECT COUNT(*) 
+        FROM postagenslike_table l 
+        WHERE l.id_postagem = p.id_postagem
+    ) AS total_likes
+FROM
+    postagens_table p
+JOIN
+    users_table u ON p.id_user = u.id_user
+WHERE
+    p.id_postagem = $1
+;  
 `
             return await pool.query(query, values)
         } catch (err) {
@@ -133,6 +163,45 @@ p.id_postagem = $1
             return await pool.query(query)
         } catch (err) {
             throw err;
+        }
+    },
+
+    createComents: async (content, postagem_pai, id_usuario) => {
+        const values = [content, postagem_pai, id_usuario]
+        try {
+            const query = "INSERT INTO postagens_table (coments, content, postagem_pai, id_user) VALUES (true, $1, $2, $3)"
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
+        }
+    },
+
+    selectComents: async (id_pai) => {
+        const values = [id_pai]
+        try {
+            const query = `
+SELECT
+    p.id_postagem,
+    p.content,
+    p.created_at,
+    u.username,
+    u.id_user,
+    u.foto,
+    (
+        SELECT COUNT(*) 
+        FROM postagenslike_table l 
+        WHERE l.id_postagem = p.id_postagem
+    ) AS total_likes
+FROM
+    postagens_table p
+JOIN
+    users_table u ON p.id_user = u.id_user
+WHERE
+    coments = true AND postagem_pai = $1
+            `
+            return await pool.query(query, values)
+        } catch (err) {
+            throw err
         }
     }
 }
