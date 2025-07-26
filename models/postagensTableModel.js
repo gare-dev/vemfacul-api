@@ -1,5 +1,4 @@
 const pool = require('../config/db');
-const jwt = require('jsonwebtoken')
 
 const postagensTableModel = {
     createPostagem: async (user_id, content) => {
@@ -14,8 +13,8 @@ const postagensTableModel = {
     },
     // deletPostagem
     // [more ...]
-    selectPostagem: async (username) => {
-        const values = [username]
+    selectPostagem: async (id_user, username) => {
+        const values = [id_user, username]
 
         try {
             const query = `
@@ -26,28 +25,34 @@ SELECT
     u.username,
     u.id_user,
     (
+        select count(*)
+        from postagens_table
+        where coments = true AND postagem_pai = p.id_postagem
+    ) AS total_comments,
+    (
         SELECT COUNT(*) 
         FROM postagenslike_table l 
         WHERE l.id_postagem = p.id_postagem
-    ) AS total_likes
+    ) AS total_likes,
+    (
+    SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $1
+    ) as alredyLiked
 FROM
     postagens_table p
 JOIN
     users_table u ON p.id_user = u.id_user
 WHERE
-    u.username LIKE $1 AND coments = false
+    u.username LIKE $2 AND coments = false
 ORDER BY
     p.id_postagem DESC;
-
-   
 `
             return await pool.query(query, values)
         } catch (err) {
             throw err
         }
     },
-    selectSinglePostagem: async (id_postagem) => {
-        const values = [id_postagem]
+    selectSinglePostagem: async (id_user, id_postagem) => {
+        const values = [id_user, id_postagem]
 
         try {
             const query = `
@@ -59,31 +64,29 @@ SELECT
     u.id_user,
     u.foto,
     (
+        select count(*)
+        from postagens_table
+        where coments = true AND postagem_pai = p.id_postagem
+    ) AS total_comments,
+    (
         SELECT COUNT(*) 
         FROM postagenslike_table l 
         WHERE l.id_postagem = p.id_postagem
-    ) AS total_likes
+    ) AS total_likes,
+     (
+     SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $1
+    ) as alredyLiked
 FROM
     postagens_table p
 JOIN
     users_table u ON p.id_user = u.id_user
 WHERE
-    p.id_postagem = $1
+    p.id_postagem = $2
 ;  
 `
             return await pool.query(query, values)
         } catch (err) {
             throw err
-        }
-    },
-    alredyLike: async (id_postagem, id_user) => {
-        const valuler = [id_postagem, id_user]
-        try {
-            const query = "SELECT 1 from postagenslike_table WHERE id_postagem = $1 AND id_user = $2"
-            const result = await pool.query(query, valuler)
-            return result
-        } catch (err) {
-            throw err;
         }
     },
     likePostagem: async (id_postagem, id_user) => {
@@ -108,35 +111,6 @@ WHERE
             throw err;
         }
     },
-    getLikesCout: async (id_postagem) => {
-        const values = [id_postagem]
-
-        try {
-            const query = `
-select
-  (
-    select
-      count(*)
-    from
-      postagenslike_table l
-    where
-      p.id_postagem = l.id_postagem
-  ) as like_count
-from
-  postagenslike_table l
-  join postagens_table p on p.id_postagem = l.id_postagem
-  join users_table u on p.id_user = u.id_user
-  and l.id_user = u.id_user
-where 
-p.id_postagem = $1
-            `
-
-            return await pool.query(query, values)
-        } catch (err) {
-            throw err;
-        }
-    },
-
 
     selectAllPosts: async () => {
         try {
@@ -149,6 +123,11 @@ p.id_postagem = $1
                 u.id_user,
                 u.nome,
                 u.foto,
+                (
+                    select count(*)
+                    from postagens_table
+                    where coments = true AND postagem_pai = p.id_postagem
+                ) AS total_comments,
                 (
                     SELECT COUNT(*) 
                     FROM postagenslike_table l 
@@ -187,6 +166,11 @@ SELECT
     u.username,
     u.id_user,
     u.foto,
+    (
+        select count(*)
+        from postagens_table
+        where coments = true AND postagem_pai = p.id_postagem
+    ) AS total_comments,
     (
         SELECT COUNT(*) 
         FROM postagenslike_table l 

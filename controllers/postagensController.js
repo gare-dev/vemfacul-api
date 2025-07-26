@@ -33,17 +33,17 @@ const postagensController = {
     // deletPostagem
     // [more ...]
     getPostagem: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id_user = token.id
         const username = req.params.username
 
         try {
-            const responsePosts = await postagensTableModel.selectPostagem(username)
-
+            const responsePosts = await postagensTableModel.selectPostagem(id_user, username)
             if (responsePosts.rowCount >= 1) {
-
                 return res.status(200).json({
                     message: "Postagens encontradas",
                     code: "POSTAGENS_FOUND",
-                    postagens: responsePosts.rows,
+                    postagens: responsePosts.rows
                 })
             } else {
                 return res.status(400).json({
@@ -59,11 +59,13 @@ const postagensController = {
         }
     },
     getSinglePostagem: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id_user = token.id
         const id_postagem = +req.params.id_postagem
-        
+
         console.log(id_postagem)
         try {
-            const responsePosts = await postagensTableModel.selectSinglePostagem(id_postagem)
+            const responsePosts = await postagensTableModel.selectSinglePostagem(id_user, id_postagem)
             console.log(responsePosts.rows)
             if (responsePosts.rowCount >= 1) {
 
@@ -142,42 +144,9 @@ const postagensController = {
             })
         }
     },
-    getLikesCount: async (req, res) => {
-        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
-        const id_user = token.id
-
-        const { id_postagem } = req.body;
-
-        try {
-            const response = await postagensTableModel.getLikesCout(id_postagem)
-
-            if (response.rowCount >= 1) {
-                const alreadyLiked = await postagensTableModel.alredyLike(id_postagem, id_user)
-                return res.status(200).json({
-                    message: "Postagem encontrada",
-                    code: "COUNT_LIKE_SUCESS",
-                    likes: response.rows[0].like_count,
-                    alreadyLiked: alreadyLiked.rowCount > 0 ? true : false
-                })
-            } else {
-                return res.status(200).json({
-                    message: "não há likes para esse post",
-                    code: "LIKES_NULL"
-                })
-            }
-
-        } catch (error) {
-            return res.status(500).json({
-                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde",
-                error: error.toString()
-            })
-        }
-    },
-
     selectAllPosts: async (req, res) => {
         try {
             const response = await postagensTableModel.selectAllPosts()
-
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Postagens encontradas",
