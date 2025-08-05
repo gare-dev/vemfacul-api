@@ -50,6 +50,7 @@ const cursinhosTableModel = {
             throw new Error("Error approving cursinho: " + error);
         }
     },
+
 }
 
 module.exports = cursinhosTableModel

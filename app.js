@@ -16,6 +16,7 @@ const adminTableController = require("./controllers/adminTableController");
 const app = express();
 const PORT = 3001;
 
+
 app.use(cors({
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -66,7 +67,6 @@ app.post('/api/createPostagem', postagensTableController.createPostagem);
 app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
 app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
 app.post('/api/selectposts', postagensTableController.selectAllPosts)
-
 
 
 app.listen(PORT, () => {

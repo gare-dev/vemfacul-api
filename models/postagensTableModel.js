@@ -39,7 +39,7 @@ WHERE
 ORDER BY
     p.id_postagem DESC;
 
-   
+
 `
             return await pool.query(query, values)
         } catch (err) {
