@@ -1,0 +1,14 @@
+{
+ "compilerOptions": {
+  "target": "es2023",
+  "module": "nodenext",
+  "outDir": "./dist",
+  "strict": true,
+  "esModuleInterop": true,
+  "skipLibCheck": true,
+  "lib": ["ES2023"],
+  "forceConsistentCasingInFileNames": true
+ },
+ "include": ["src/**/*.ts"],
+ "exclude": ["node_modules"]
+}
