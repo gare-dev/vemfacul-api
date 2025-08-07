@@ -1,0 +1,89 @@
+import express, { NextFunction, Request, Response } from "express"
+import { PostService } from "../services/PostService"
+import { PostsRepository } from "../repositories/PostRepository"
+import authGuard from "../middleware/authGuard"
+
+const router = express.Router()
+const service = new PostService(new PostsRepository())
+
+router.post("/user/post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { content } = req.body
+        const id_user = req.user.id
+
+        await service.createPost(id_user, content)
+
+        return res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get("/user/:username/post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const username = req.params.username
+
+        const posts = await service.getPostByUsername(username)
+
+        return res.status(200).json({
+            data: posts
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.patch("/user/post/:post/like", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_post = req.params.post
+        const id_user = req.user.id
+
+        await service.likePost(id_post, id_user)
+
+        return res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.patch("/user/post/:post/unlike", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_post = req.params.post
+        const id_user = req.user.id
+
+        await service.unlikePost(id_post, id_user)
+
+        return res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get("/user/post/:post/like", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_post = req.params.post
+
+        const likes = await service.getLikesCount(id_post)
+
+        return res.status(200).json({
+            message: "Likes encontrados com sucesso.",
+            data: likes
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get("/post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const posts = await service.selectAllPosts()
+
+        return res.status(200).json({
+            data: posts.rows
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+export default router
