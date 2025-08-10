@@ -2,12 +2,10 @@
 const usersTableModel = require("../models/usersTableModel")
 const sendConfirmationEmail = require("../smtp/createAccount")
 const sendForgotPasswordEmail = require("../smtp/forgotPasswordAccount")
-const crypto = require("crypto")
 const jwt = require("jsonwebtoken")
 const supabase = require("../config/supabaseClient")
 const { setRedis, getRedis } = require("../config/redisConfig")
 const getDecodedJwt = require("../utils/getDecodedJwt")
-const { set } = require("../config/smtp")
 const cryptr = require("../cryptr/cryptr")
 
 
