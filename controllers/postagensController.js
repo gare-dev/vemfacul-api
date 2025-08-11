@@ -6,7 +6,6 @@ const postagensController = {
         const { content } = req.body;
 
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
-
         const user_id = token.id
 
         try {
@@ -34,19 +33,17 @@ const postagensController = {
     // deletPostagem
     // [more ...]
     getPostagem: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id_user = token.id
         const username = req.params.username
-        // const {id_postagem} = req.body
 
         try {
-            const responsePosts = await postagensTableModel.selectPostagem(username)
-            // const responseLikes = await postagensTableModel.getLikesCout(id_postagem)
-
+            const responsePosts = await postagensTableModel.selectPostagem(id_user, username)
             if (responsePosts.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Postagens encontradas",
                     code: "POSTAGENS_FOUND",
                     postagens: responsePosts.rows
-                    // likes: responseLikes.rows[0].like_count
                 })
             } else {
                 return res.status(400).json({
@@ -61,12 +58,40 @@ const postagensController = {
             })
         }
     },
+    getSinglePostagem: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id_user = token.id
+        const id_postagem = +req.params.id_postagem
+
+        console.log(id_postagem)
+        try {
+            const responsePosts = await postagensTableModel.selectSinglePostagem(id_user, id_postagem)
+            console.log(responsePosts.rows)
+            if (responsePosts.rowCount >= 1) {
+
+                return res.status(200).json({
+                    message: "Postagem encontradas",
+                    code: "POSTAGENS_FOUND",
+                    postagem: responsePosts.rows,
+                })
+            } else {
+                return res.status(400).json({
+                    message: "Postagem não encontrado",
+                    code: "POSTAGEM_NOT_FOUND"
+                })
+            }
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            })
+        }
+    },
 
     likePostagem: async (req, res) => {
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
 
-
-        const id_postagem = req.params.id //mudar a lógica (não posso passar o id pelo router)
+        const { id_postagem } = req.body
         const id_user = token.id
 
         try {
@@ -75,12 +100,13 @@ const postagensController = {
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "postagem curtida com sucesso!",
-                    code: "LIKE_SUCESS"
-
+                    code: "LIKE_SUCESS",
+                    alreadyLiked: false
                 })
             } else {
                 return res.status(400).json({
-                    message: "Usuário já curtiu essa postagem"
+                    message: "Usuário já curtiu essa postagem",
+                    code: "ALREADY_LIKED"
                 })
             }
         } catch (error) {
@@ -93,8 +119,7 @@ const postagensController = {
     unlikePostagem: async (req, res) => {
         const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
 
-
-        const id_postagem = req.params.id //mudar a lógica (não posso passar o id pelo router)
+        const { id_postagem } = req.body
         const id_user = token.id // getDecodeJwt
 
         try {
@@ -119,37 +144,9 @@ const postagensController = {
             })
         }
     },
-    getLikesCount: async (req, res) => {
-        const { id_postagem } = req.body;
-
-        try {
-            const response = await postagensTableModel.getLikesCout(id_postagem)
-
-            if (response.rowCount >= 1) {
-                return res.status(200).json({
-                    message: "Postagem encontrada",
-                    code: "COUNT_LIKE_SUCESS",
-                    likes: response.rows[0].like_count
-                })
-            } else {
-                return res.status(200).json({
-                    message: "não há likes para esse post",
-                    code: "LIKES_NULL"
-                })
-            }
-
-        } catch (error) {
-            return res.status(500).json({
-                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde",
-                error: error.toString()
-            })
-        }
-    },
-
     selectAllPosts: async (req, res) => {
         try {
             const response = await postagensTableModel.selectAllPosts()
-
             if (response.rowCount >= 1) {
                 return res.status(200).json({
                     message: "Postagens encontradas",
@@ -162,6 +159,55 @@ const postagensController = {
                     code: "POSTAGEM_NOT_FOUND"
                 })
             }
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            })
+        }
+    },
+
+    createComent: async (req, res) => {
+        const token = await getDecodedJwt(req.headers.authorization.split(" ")[1])
+        const id_user = token.id
+        const { content, postagem_pai } = req.body
+
+        try {
+            const response = await postagensTableModel.createComents(content, postagem_pai, id_user)
+            if (response.rowCount >= 1) return res.status(200).json({
+                message: "Comentario criado com sucesso!",
+                code: "COMENT_SUCESS"
+            })
+            return res.status(400).json({
+                message: "erro ao criar comentario",
+                code: "COMENT_ERROR",
+                error: response.rows[0]
+            })
+
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
+                error: error.toString(),
+            })
+        }
+    },
+    selectComent: async (req, res) => {
+        const { id_pai } = req.body
+
+        try {
+            const response = await postagensTableModel.selectComents(id_pai)
+            console.log("comentarios encontrados")
+            if (response.rowCount >= 1) return res.status(200).json({
+                message: "Comentarios encontrados!",
+                code: "COMENTS_FOUND",
+                coments: response.rows
+            })
+            return res.status(404).json({
+                message: "Essa publicacao nao tem comentarios",
+                code: "COMENTS_NOT_FOUND"
+            })
+
         } catch (error) {
             return res.status(500).json({
                 message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",

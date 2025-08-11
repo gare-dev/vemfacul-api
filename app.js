@@ -9,7 +9,9 @@ const personalEventsTableController = require("./controllers/personalEventsTable
 const missAuth = require("./middleware/missauth");
 const getSession = require("./middleware/getsession");
 const postagensTableController = require('./controllers/postagensController');
-
+const cursinhosTableController = require('./controllers/cursinhosTableController');
+const getAdminAuth = require("./middleware/getAdminAuth");
+const adminTableController = require("./controllers/adminTableController");
 
 const app = express();
 const PORT = 3001;
@@ -30,15 +32,25 @@ app.use(cookieParser());
 app.use(express.json());
 
 
+app.post('/api/forgotpassword', usersTableController.forgotPassword)
+app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/getevents', eventsTableController.getEvents)
 app.post('/api/createaccount', usersTableController.createAccount)
 app.post('/api/confirmaccount', usersTableController.confirmAccount)
-app.post('/api/forgotpassword', usersTableController.forgotPassword)
-app.post('/api/resetpassword', usersTableController.resetPassword)
 app.post('/api/loginaccount', usersTableController.loginAccount)
 app.post('/api/registeraccount', upload.single("imagem"), usersTableController.registerAccount)
+// app.post('/api/likePostagem/countlikes', postagensTableController.getLikesCount)
+app.post('/api/coments', postagensTableController.selectComent)
 app.post('/api/postagens/:username', postagensTableController.getPostagem)
 app.post('/api/likePostagem/countlikes', postagensTableController.getLikesCount)
+app.post('/api/insertcursinho', upload.fields([{ name: "imagens", maxCount: 5 }, { name: 'logo', maxCount: 1 }]), cursinhosTableController.insertCursinho)
+app.post('/api/loginadmin', adminTableController.selectAdmin);
+app.get('/api/adminauth', adminTableController.adminAuth);
+
+app.get('/api/selectapprovecursinhos', getAdminAuth, cursinhosTableController.selectAdminCursinhos)
+app.patch('/api/approvecursinho/:id', getAdminAuth, cursinhosTableController.aproveAdminCursinho)
+
+
 
 app.use(missAuth)
 app.use(getSession)
@@ -53,9 +65,13 @@ app.post('/api/editprofile', upload.fields([{ name: "foto", maxCount: 1 }, { nam
 app.post('/api/getprofileinfo', usersTableController.getProfileInfo)
 app.post('/api/validateprofile', usersTableController.validateProfile)
 app.post('/api/createPostagem', postagensTableController.createPostagem);
-app.post('/api/likePostagem/:id/like', postagensTableController.likePostagem)
-app.post('/api/likePostagem/:id/unlike', postagensTableController.unlikePostagem)
+app.post('/api/postagens/usuario/:username', postagensTableController.getPostagem)
+app.post('/api/postagens/unica/:id_postagem', postagensTableController.getSinglePostagem)
+app.post('/api/likePostagem/like', postagensTableController.likePostagem)
+app.post('/api/likePostagem/unlike', postagensTableController.unlikePostagem)
 app.post('/api/selectposts', postagensTableController.selectAllPosts)
+app.post('/api/coments/create', postagensTableController.createComent)
+
 
 
 app.listen(PORT, () => {
