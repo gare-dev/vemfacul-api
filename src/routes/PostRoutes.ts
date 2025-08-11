@@ -22,8 +22,9 @@ router.post("/user/post", authGuard, async (req: Request, res: Response, next: N
 router.get("/user/:username/post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const username = req.params.username
+        const id_user = req.user.id
 
-        const posts = await service.getPostByUsername(username)
+        const posts = await service.getPostByUsername(id_user, username)
 
         return res.status(200).json({
             data: posts
@@ -33,12 +34,12 @@ router.get("/user/:username/post", authGuard, async (req: Request, res: Response
     }
 })
 
-router.patch("/user/post/:post/like", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+router.patch("/user/post/like", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id_post = req.params.post
+        const { id_postagem } = req.body
         const id_user = req.user.id
 
-        await service.likePost(id_post, id_user)
+        await service.likePost(id_postagem, id_user)
 
         return res.sendStatus(201)
     } catch (err) {
@@ -46,12 +47,13 @@ router.patch("/user/post/:post/like", authGuard, async (req: Request, res: Respo
     }
 })
 
-router.patch("/user/post/:post/unlike", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+router.patch("/user/post/unlike", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id_post = req.params.post
+        const { id_postagem } = req.body
+
         const id_user = req.user.id
 
-        await service.unlikePost(id_post, id_user)
+        await service.unlikePost(id_postagem, id_user)
 
         return res.sendStatus(201)
     } catch (err) {
@@ -84,6 +86,37 @@ router.get("/post", authGuard, async (req: Request, res: Response, next: NextFun
     } catch (err) {
         next(err)
     }
+})
+
+router.get("/post/:post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_post = req.params.id_post
+        const id_user = req.user.id
+
+        const post = await service.getSinglePost(id_user, id_post)
+
+        return res.status(200).json({
+            code: "POSTAGENS_FOUND",
+            data: post.rows
+        })
+
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.post("/coment", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_user = +req.user.id
+        const { content, postagem_pai } = req.body
+
+        await service.createComment(content, postagem_pai, id_user)
+
+        return res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+
 })
 
 export default router

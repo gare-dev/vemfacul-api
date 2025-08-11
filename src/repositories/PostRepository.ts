@@ -9,29 +9,36 @@ export class PostsRepository {
         return await pool.query(query, values)
     }
 
-    async getPostagemByUsername(username: string) {
-        const values = [username]
+    async getPostagemByUsername(id_user: string, username: string) {
+        const values = [id_user, username]
 
         const query = ` SELECT
-                        p.id_postagem,
-                        p.content,
-                        p.created_at,
-                        u.username,
-                        u.id_user,
-                    ( 
-                        SELECT COUNT(*) 
-                        FROM postagenslike_table l 
-                        WHERE l.id_postagem = p.id_postagem
-                    ) 
-                        AS total_likes
-                    FROM
-                        postagens_table p
-                    JOIN
-                        users_table u ON p.id_user = u.id_user
-                    WHERE
-                        u.username LIKE $1
-                    ORDER BY
-                        p.id_postagem DESC;`
+    p.id_postagem,
+    p.content,
+    p.created_at,
+    u.username,
+    u.id_user,
+    (
+        select count(*)
+        from postagens_table
+        where coments = true AND postagem_pai = p.id_postagem
+    ) AS total_comments,
+    (
+        SELECT COUNT(*) 
+        FROM postagenslike_table l 
+        WHERE l.id_postagem = p.id_postagem
+    ) AS total_likes,
+    (
+    SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $1
+    ) as alredyLiked
+FROM
+    postagens_table p
+JOIN
+    users_table u ON p.id_user = u.id_user
+WHERE
+    u.username LIKE $2 AND coments = false
+ORDER BY
+    p.id_postagem DESC`
         return await pool.query(query, values)
     }
 
@@ -79,6 +86,11 @@ export class PostsRepository {
                 u.nome,
                 u.foto,
                 (
+                    select count(*)
+                    from postagens_table
+                    where coments = true AND postagem_pai = p.id_postagem
+                ) AS total_comments,
+                (
                     SELECT COUNT(*) 
                     FROM postagenslike_table l 
                     WHERE l.id_postagem = p.id_postagem
@@ -91,4 +103,77 @@ export class PostsRepository {
                 p.created_at DESC;`
         return await pool.query(query)
     }
+
+    async createComment(content: string, postagem_pai: number, id_user: number) {
+        const values = [content, postagem_pai, id_user]
+
+        const query = "INSERT INTO postagens_table (coments, content, postagem_pai, id_user) VALUES (true, $1, $2, $3)"
+        return await pool.query(query, values)
+
+    }
+
+    async selectComments(id_pai: string) {
+        const values = [id_pai]
+
+        const query = `SELECT
+    p.id_postagem,
+    p.content,
+    p.created_at,
+    u.username,
+    u.id_user,
+    u.foto,
+    (
+        select count(*)
+        from postagens_table
+        where coments = true AND postagem_pai = p.id_postagem
+    ) AS total_comments,
+    (
+        SELECT COUNT(*) 
+        FROM postagenslike_table l 
+        WHERE l.id_postagem = p.id_postagem
+    ) AS total_likes
+FROM
+    postagens_table p
+JOIN
+    users_table u ON p.id_user = u.id_user
+WHERE
+    coments = true AND postagem_pai = $1`
+        return await pool.query(query, values)
+    }
+
+    async selectSinglePost(id_user: string, id_postagem: string) {
+        const values = [id_user, id_postagem]
+
+        const query = `
+SELECT
+    p.id_postagem,
+    p.content,
+    p.created_at,
+    u.username,
+    u.id_user,
+    u.foto,
+    (
+        select count(*)
+        from postagens_table
+        where coments = true AND postagem_pai = p.id_postagem
+    ) AS total_comments,
+    (
+        SELECT COUNT(*) 
+        FROM postagenslike_table l 
+        WHERE l.id_postagem = p.id_postagem
+    ) AS total_likes,
+     (
+     SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $1
+    ) as alredyLiked
+FROM
+    postagens_table p
+JOIN
+    users_table u ON p.id_user = u.id_user
+WHERE
+    p.id_postagem = $2
+;  
+`
+        return await pool.query(query, values)
+    }
+
 }
