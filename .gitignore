@@ -2,5 +2,5 @@
 .env
 
 # TODO
-# Testar os endpoints que usam imagens 
 # Adicionar funções que validam os campos
+.vercel
