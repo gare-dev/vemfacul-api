@@ -56,11 +56,9 @@ router.post("/course", upload.fields([{ name: "imagens", maxCount: 5 }, { name: 
             imagens_espaco: imgs,
         };
 
-        const response = await service.insertCursinho(course, courseInfo, address)
+        await service.insertCursinho(course, courseInfo, address)
 
-        return res.status(201).json({
-            message: response
-        })
+        return res.sendStatus(201)
 
     } catch (err) {
         next(err)

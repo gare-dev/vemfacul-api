@@ -11,7 +11,16 @@ import { errorHandler } from "../middleware/errorHandler";
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    origin: [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "https://invest-liard.vercel.app"
+    ]
+}));
 app.use(express.json())
 app.use(cookieParser())
 

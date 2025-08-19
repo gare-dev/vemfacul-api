@@ -39,15 +39,16 @@ router.post("/user/local/event", authGuard, async (req: Request, res: Response, 
 
         await service.insertPersonalLocalEvent({ ...data, id_user: req.user.id })
 
+
         return res.sendStatus(201)
     } catch (err) {
         next(err)
     }
 })
 
-router.delete("/user/event", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/user/event/:id", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id_pevent } = req.body
+        const id_pevent = req.params.id.toString()
         const id_user = req.user.id
 
         await service.deletePersonalEvent(id_pevent, id_user)

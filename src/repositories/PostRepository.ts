@@ -122,6 +122,7 @@ ORDER BY
     u.username,
     u.id_user,
     u.foto,
+    u.nome,
     (
         select count(*)
         from postagens_table
@@ -152,6 +153,7 @@ SELECT
     u.username,
     u.id_user,
     u.foto,
+    u.nome,
     (
         select count(*)
         from postagens_table

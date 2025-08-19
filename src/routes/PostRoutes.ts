@@ -90,7 +90,7 @@ router.get("/post", authGuard, async (req: Request, res: Response, next: NextFun
 
 router.get("/post/:post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id_post = req.params.id_post
+        const id_post = req.params.post
         const id_user = req.user.id
 
         const post = await service.getSinglePost(id_user, id_post)
@@ -117,6 +117,21 @@ router.post("/coment", authGuard, async (req: Request, res: Response, next: Next
         next(err)
     }
 
+})
+
+router.get("/post/coment/:id", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_pai = req.params.id
+
+        const coments = await service.selectComment(id_pai)
+
+        return res.status(200).json({
+            data: coments
+        })
+
+    } catch (err) {
+        next(err)
+    }
 })
 
 export default router
