@@ -75,4 +75,14 @@ export class PostService {
 
         return await this.repository.createComment(content, postagem_pai, id_user)
     }
+
+    async selectComment(id_pai: string) {
+        if (!id_pai) throw new CustomError("ID Pai é necessário para o selectComment", 400, "IDPAI_MISSING")
+
+        const comment = await this.repository.selectComments(id_pai)
+
+        if (comment.rowCount && comment.rowCount === 0) throw new CustomError("Nenhum comentário encontrado", 400, "COMMENT_NOTFOUND")
+
+        return comment.rows
+    }
 }

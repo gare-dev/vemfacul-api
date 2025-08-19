@@ -9,15 +9,15 @@ export function CreatePersonalLocalEventValidation(data: CreatePersonalLocalEven
         "month",
         "year",
         "title",
-        "cursinho",
+
         "descricao",
-        "foto",
-        "link",
-        "type",
-        "color",
+
+
+
+
         "main_title",
         "isImportant",
-        "hora"
+
     ];
 
     const missingFields = requiredFields.filter(field => !data[field as keyof typeof data]);

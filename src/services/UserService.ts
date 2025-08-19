@@ -121,8 +121,6 @@ export class UserService {
 
         const user_profile = await this.repository.userProfile(username)
 
-        console.log(user_profile)
-
         if (user_profile.rowCount === 0) {
             throw new CustomError("Usuário não encontrado.", 404, "USER_NOT_FOUND")
         }
