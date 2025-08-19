@@ -9,11 +9,11 @@ export function CreatePersonalEventValidation(data: CreatePersonalEventType) {
         "month",
         "year",
         "title",
-        "cursinho",
+
         "descricao",
-        "foto",
-        "link",
-        "type",
+
+
+
         "color",
         "main_title",
     ];

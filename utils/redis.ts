@@ -16,6 +16,7 @@ export class Redis {
             await this.client.connect()
         }
 
+        console.log("🔴 Redis client connected successfully")
         return this.client
     }
 
