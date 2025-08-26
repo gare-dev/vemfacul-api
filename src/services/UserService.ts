@@ -30,6 +30,7 @@ export class UserService {
             if ((err as { code: string })?.code === "23505") {
                 throw new CustomError("Já existe uma conta com esse email.", 409, "ALREADYUSED_EMAIL")
             }
+            throw err
         }
     }
 
