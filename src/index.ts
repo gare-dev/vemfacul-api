@@ -9,14 +9,6 @@ app.get("/", (req, res) => {
     res.send("OK")
 })
 
-app.get("/teste", (req, res) => {
-    const token = jwt.generateJWT({ email: "gui10.gare@gmail.com" })
-
-    console.log()
-    sendConfirmationEmail("gui10.gare@gmail.com", token)
-    res.send("Teste")
-})
-
 app.listen(PORT, () => {
     console.log(`🟢 Server running on port ${PORT}`)
 })
