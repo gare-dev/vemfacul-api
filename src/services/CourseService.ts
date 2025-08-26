@@ -35,7 +35,7 @@ export class CourseService {
         let images_url = []
         let logo_url = null
 
-        images_url = await Promise.all(course_info.imagens_espaco.map(async (file) => {
+        images_url = await Promise.all(course_info.imagens_espaco?.map(async (file) => {
             return uploadCoursePhoto(file as MulterFile, nomeExibido)
         }))
         logo_url = await uploadCoursePhoto(course_info.logo as unknown as MulterFile, nomeExibido)
