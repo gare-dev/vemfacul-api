@@ -25,6 +25,9 @@ export class UserService {
             if (response.rowCount === 0) {
                 throw new CustomError("Perfil não criado, tente novamente mais tarde.", 400, "UNKNOWN_ERROR")
             }
+            if (response.rowCount! > 0) {
+                console.log("Usuário criado com sucesso.")
+            }
             return this.jwtHandler.generateJWT({ email: user.email })
         } catch (err: unknown) {
             if ((err as { code: string })?.code === "23505") {

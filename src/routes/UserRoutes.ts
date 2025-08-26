@@ -17,8 +17,10 @@ router.post("/user/email", async (req: Request, res: Response, next: NextFunctio
     try {
         const { email, password } = req.body
 
+
         const token = await service.createUser({ email, password })
 
+        console.log(token)
         sendConfirmationEmail(email, token!)
         return res.status(201).json({
             message: "Conta criada, cheque o seu email.",
