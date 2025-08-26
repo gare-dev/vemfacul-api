@@ -10,9 +10,10 @@ app.get("/", (req, res) => {
 })
 
 app.get("/teste", (req, res) => {
-    const token = jwt.generateJWT({ email: "andrerufatoportela@gmail.com" })
+    const token = jwt.generateJWT({ email: "gui10.gare@gmail.com" })
 
-    sendConfirmationEmail("andrerufatoportela@gmail.com", token)
+    console.log()
+    sendConfirmationEmail("gui10.gare@gmail.com", token)
     res.send("Teste")
 })
 
