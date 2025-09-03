@@ -37,7 +37,7 @@ router.post("/user/login", async (req: Request, res: Response, next: NextFunctio
 
         const token = await service.loginUser({ email, password })
 
-        res.status(200).json({
+        res.status(200).cookie("token_teste", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({
             message: "Login realizado com sucesso!",
             code: "LOGIN_SUCCESS",
             auth: token
@@ -207,4 +207,18 @@ router.get("/user/validate", authGuard, async (req: Request, res: Response, next
     }
 })
 
+router.get("/token/teste", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token = req.cookies.token_teste;
+        if (!token) {
+            return res.status(401).json({ message: "Token não encontrado" });
+        }
+
+        // Aqui você pode adicionar a lógica para validar o token, se necessário
+
+        return res.status(200).json({ message: "Token válido", token });
+    } catch (err) {
+        next(err);
+    }
+})
 export default router
