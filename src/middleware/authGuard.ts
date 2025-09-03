@@ -12,6 +12,8 @@ export interface User {
 }
 
 async function authGuard(req: Request, res: Response, next: NextFunction) {
+    console.log(req.cookies)
+    console.log("COOKIE " + req.cookies.token)
     if (!req.cookies.token) {
         return res.status(401).json({
             message: "Você não está autenticado, por favor, faça login.",
