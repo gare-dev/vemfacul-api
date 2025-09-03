@@ -208,7 +208,8 @@ router.get("/user/validate", authGuard, async (req: Request, res: Response, next
 
 router.get("/token/teste", async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies.token_teste;
+        const token = req.cookies.token;
+        console.log(req.cookies)
         if (!token) {
             return res.status(401).json({ message: "Token não encontrado" });
         }
