@@ -7,6 +7,7 @@ import PostRoutes from "../routes/PostRoutes"
 import Adminroutes from "../routes/AdminRoutes"
 import PersonalEventRoutes from "../routes/PersonalEventRoutes"
 import CourseRoutes from "../routes/CourseRoutes"
+import ReviewRoutes from "../routes/ReviewRoutes"
 import { errorHandler } from "../middleware/errorHandler";
 
 const app = express()
@@ -32,6 +33,7 @@ app.use(PostRoutes)
 app.use(Adminroutes)
 app.use(PersonalEventRoutes)
 app.use(CourseRoutes)
+app.use(ReviewRoutes)
 
 app.use(errorHandler)
 

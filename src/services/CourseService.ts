@@ -74,4 +74,24 @@ export class CourseService {
 
         return approved_course
     }
+
+    async getCourse() {
+        const courses = await this.course_repo.getCourse()
+
+        if (courses.rowCount && courses.rowCount === 0) throw new CustomError("Nenhum cursinho encontrado.", 400, "EMPTY_COURSE")
+
+        return courses.rows
+    }
+
+    async getCourseById(id_course: string) {
+        if (!id_course) throw new CustomError("ID Course é necessário para buscar um cursinho.", 400, "IDCOURSE_MISSING")
+
+        const course = await this.course_repo.getCourseById(id_course)
+
+        if (course.rowCount === 0) {
+            throw new CustomError("Cursinho não encontrado.", 400, "NOTFOUND_COURSE")
+        }
+
+        return course.rows[0]
+    }
 }
