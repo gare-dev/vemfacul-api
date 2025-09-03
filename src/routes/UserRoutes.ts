@@ -17,10 +17,8 @@ router.post("/user/email", async (req: Request, res: Response, next: NextFunctio
     try {
         const { email, password } = req.body
 
-
         const token = await service.createUser({ email, password })
 
-        console.log(token)
         sendConfirmationEmail(email, token!)
         return res.status(201).json({
             message: "Conta criada, cheque o seu email.",
@@ -37,7 +35,7 @@ router.post("/user/login", async (req: Request, res: Response, next: NextFunctio
 
         const token = await service.loginUser({ email, password })
 
-        res.status(200).cookie("token_teste", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({
+        res.status(200).cookie("token", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({
             message: "Login realizado com sucesso!",
             code: "LOGIN_SUCCESS",
             auth: token
@@ -49,9 +47,10 @@ router.post("/user/login", async (req: Request, res: Response, next: NextFunctio
 
 router.get("/user/profile/info", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1]
+        const token = req.cookies.token;
 
-        const user_info = await service.profileInfo(token!)
+        const user_info = await service.profileInfo(token)
+
 
         res.status(200).json({
             code: "PROFILE_INFO",
@@ -151,7 +150,7 @@ router.get("/user/:username/profile", authGuard, async (req: Request, res: Respo
 router.patch("/user/profile/change-photo", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const photo = req.file as MulterFile
-        const token = req.headers.authorization?.split(" ")[1]
+        const token = req.cookies.token;
 
         await service.changeUserPhoto(photo, token!)
 
@@ -167,7 +166,7 @@ router.patch("/user/profile/change-photo", authGuard, async (req: Request, res: 
 router.put("/user/profile/edit", upload.fields([{ name: "foto", maxCount: 1 }, { name: "header", maxCount: 1 }]), authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userData = JSON.parse(req.body.userData)
-        const token = req.headers.authorization?.split(" ")[1]!
+        const token = req.cookies.token;
         const { name, descricao } = userData;
 
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -189,7 +188,7 @@ router.put("/user/profile/edit", upload.fields([{ name: "foto", maxCount: 1 }, {
 
 router.get("/user/validate", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1]
+        const token = req.cookies.token;
 
         const validated_user = await service.validateProfile(token!)
 
@@ -213,6 +212,7 @@ router.get("/token/teste", async (req: Request, res: Response, next: NextFunctio
         if (!token) {
             return res.status(401).json({ message: "Token não encontrado" });
         }
+
 
         // Aqui você pode adicionar a lógica para validar o token, se necessário
 
