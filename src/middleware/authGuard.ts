@@ -12,18 +12,11 @@ export interface User {
 }
 
 async function authGuard(req: Request, res: Response, next: NextFunction) {
-    if (!req.headers.authorization) {
+    const token = req.cookies.token;
+    if (!token) {
+        console.log("🔒 Auth Guard Middleware Executed. User tried to login without token.");
         return res.status(401).json({
             message: "Você não está autenticado, por favor, faça login.",
-            code: "INVALID_TOKEN"
-        });
-    }
-
-    const token = req.headers.authorization.split(" ")[1];
-
-    if (!token) {
-        return res.status(401).json({
-            message: "Token de autenticação não encontrado.",
             code: "INVALID_TOKEN"
         });
     }

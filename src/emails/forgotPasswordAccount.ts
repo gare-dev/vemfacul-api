@@ -5,15 +5,20 @@ import cryptr from "../config/cryptr"
 const sendForgotPasswordEmail = async (destinatario: string) => {
     const destinatarioLink = cryptr.encrypt(destinatario);
     try {
-
-        const mailOptions = {
-            from: "tccvemfacul@gmail.com",
-            to: destinatario,
-            subject: "Recuperação de Senha",
+        await transporter.emails.send({
+            from: 'tccvemfacul@gmail.com',
+            to: [destinatario],
+            subject: 'Recuperação de Senha',
             html: forgotPasswordHtml(destinatarioLink),
-        }
+        });
+        // const mailOptions = {
+        //     from: "tccvemfacul@gmail.com",
+        //     to: destinatario,
+        //     subject: "Recuperação de Senha",
+        //     html: forgotPasswordHtml(destinatarioLink),
+        // }
 
-        await transporter.sendMail(mailOptions);
+        // await transporter.sendMail(mailOptions);
         console.log('✅ Email de recuperação de senha enviado com sucesso!')
 
     } catch (error) {

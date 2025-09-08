@@ -28,7 +28,7 @@ export type CreateCourseInfoType = {
     modalidades: string[]
     disciplinas_foco: string[]
     media_alunos: string
-    diferenciais: string
+    diferenciais: string[]
     faixa_preco: string
     tem_bolsa: boolean
     aceita_programas_publico: boolean

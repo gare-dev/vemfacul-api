@@ -25,11 +25,15 @@ export class UserService {
             if (response.rowCount === 0) {
                 throw new CustomError("Perfil não criado, tente novamente mais tarde.", 400, "UNKNOWN_ERROR")
             }
+            if (response.rowCount! > 0) {
+                console.log("Usuário criado com sucesso.")
+            }
             return this.jwtHandler.generateJWT({ email: user.email })
         } catch (err: unknown) {
             if ((err as { code: string })?.code === "23505") {
                 throw new CustomError("Já existe uma conta com esse email.", 409, "ALREADYUSED_EMAIL")
             }
+            throw err
         }
     }
 
@@ -111,9 +115,18 @@ export class UserService {
         }
         const image_url = await uploadPhoto(photo, user.email)
 
-        await this.repository.updateUserPhoto({ email: user.email, imageURL: image_url })
+        await this.repository.updateUserPhoto({ email: this.jwtHandler.verifyJWT(user.email)?.email as string, imageURL: image_url })
 
-        await this.repository.registerAccount(user)
+        const response = await this.repository.registerAccount({ ...user, email: this.jwtHandler.verifyJWT(user.email)?.email as string })
+
+
+
+        const { id_user, nome, username } = response?.rows[0];
+
+        const token = this.jwtHandler.generateJWT({ id: id_user, email: user.email },)
+        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username }, 2 * 24 * 60 * 60)
+
+        return token
     }
 
     async userProfile(username: string) {
@@ -190,5 +203,6 @@ export class UserService {
 
         throw new CustomError("Perfil não validado.", 400, "PROFILE_NOTVALIDATED")
     }
+
 
 }

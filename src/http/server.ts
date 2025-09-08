@@ -7,6 +7,7 @@ import PostRoutes from "../routes/PostRoutes"
 import Adminroutes from "../routes/AdminRoutes"
 import PersonalEventRoutes from "../routes/PersonalEventRoutes"
 import CourseRoutes from "../routes/CourseRoutes"
+import ReviewRoutes from "../routes/ReviewRoutes"
 import { errorHandler } from "../middleware/errorHandler";
 
 const app = express()
@@ -18,7 +19,9 @@ app.use(cors({
         "http://localhost:3000",
         "http://localhost:3001",
         "http://localhost:3002",
-        "https://invest-liard.vercel.app"
+        "https://invest-liard.vercel.app",
+        "https://www.chapera.org",
+        "https://www.chapaera.org"
     ]
 }));
 app.use(express.json())
@@ -30,6 +33,7 @@ app.use(PostRoutes)
 app.use(Adminroutes)
 app.use(PersonalEventRoutes)
 app.use(CourseRoutes)
+app.use(ReviewRoutes)
 
 app.use(errorHandler)
 

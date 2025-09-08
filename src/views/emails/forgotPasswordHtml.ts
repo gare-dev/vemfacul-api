@@ -1,7 +1,7 @@
-
+const forgot_url = process.env.FORGOT_PWD_URL
 
 const forgotPasswordHtml = (email: string) => {
-    return `
+   return `
    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
  lang="en"
@@ -604,7 +604,7 @@ const forgotPasswordHtml = (email: string) => {
                   style="display: block; background-color: #001ecb"
                  >
                   <a
-                   href="http://localhost:3000/alterarSenha/${email}"
+                   href="${forgot_url}${email}"
                    style="
                     color: #ffffff;
                     display: block;

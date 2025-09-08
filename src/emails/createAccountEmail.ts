@@ -3,15 +3,15 @@ import createAccountHtml from "../views/emails/createAccountHtml"
 
 
 const sendConfirmationEmail = async (destinatario: string, confirmationLink: string) => {
-    const mailOptions = {
-        from: "tccvemfacul@gmail.com",
-        to: destinatario,
-        subject: "Confirmação de Conta",
-        html: createAccountHtml(confirmationLink),
-    }
 
     try {
-        transporter.sendMail(mailOptions)
+        const data = await transporter.emails.send({
+            from: "Equipe Chapera <no-reply@chapera.org>",
+            to: destinatario,
+            subject: 'Confirme sua conta',
+            html: createAccountHtml(confirmationLink),
+        });
+        console.log(data)
         console.log('✅ Email de confirmação de conta enviado com sucesso!')
 
     } catch (error) {
