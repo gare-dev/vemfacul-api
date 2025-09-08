@@ -7,6 +7,7 @@ import { Redis } from "../../utils/redis";
 import { MulterFile } from "../../utils/uploadPhoto";
 import authGuard from "../middleware/authGuard";
 import upload from "../config/multer";
+import { CustomError } from "../errors/HttpError";
 
 const router = express.Router()
 const service = new UserService(new UserRepository(), new JWTClass(process.env.SECRET!), new Redis())
@@ -50,7 +51,6 @@ router.get("/user/profile/info", authGuard, async (req: Request, res: Response, 
         const token = req.cookies.token;
 
         const user_info = await service.profileInfo(token)
-
 
         res.status(200).json({
             code: "PROFILE_INFO",
@@ -119,9 +119,9 @@ router.post("/user/register", upload.single("imagem"), async (req: Request, res:
         } = userData
         const photo = req.file as MulterFile
 
-        await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares }, photo)
+        const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares }, photo)
 
-        return res.status(201).json({
+        return res.status(201).cookie("token", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({
             message: "Conta registrada com sucesso!",
             code: "REGISTERED_ACCOUNT"
         });
@@ -214,12 +214,25 @@ router.get("/token/teste", async (req: Request, res: Response, next: NextFunctio
             return res.status(401).json({ message: "Token não encontrado" });
         }
 
-
-        // Aqui você pode adicionar a lógica para validar o token, se necessário
-
         return res.status(200).json({ message: "Token válido", token });
     } catch (err) {
         next(err);
     }
 })
+
+router.delete("/user/auth", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) throw new CustomError("Token não encontrado.", 401, "TOKEN_NOT_FOUND");
+
+        return res.status(200).cookie("token", "", { expires: new Date(0) }).json({
+            message: "Token removido com sucesso!",
+            code: "TOKEN_REMOVED"
+        });
+    } catch (err) {
+        next(err)
+    }
+})
+
 export default router
