@@ -115,9 +115,18 @@ export class UserService {
         }
         const image_url = await uploadPhoto(photo, user.email)
 
-        await this.repository.updateUserPhoto({ email: user.email, imageURL: image_url })
+        await this.repository.updateUserPhoto({ email: this.jwtHandler.verifyJWT(user.email)?.email as string, imageURL: image_url })
 
-        await this.repository.registerAccount(user)
+        const response = await this.repository.registerAccount({ ...user, email: this.jwtHandler.verifyJWT(user.email)?.email as string })
+
+
+
+        const { id_user, nome, username } = response?.rows[0];
+
+        const token = this.jwtHandler.generateJWT({ id: id_user, email: user.email },)
+        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username }, 2 * 24 * 60 * 60)
+
+        return token
     }
 
     async userProfile(username: string) {
@@ -194,5 +203,6 @@ export class UserService {
 
         throw new CustomError("Perfil não validado.", 400, "PROFILE_NOTVALIDATED")
     }
+
 
 }
