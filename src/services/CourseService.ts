@@ -94,4 +94,13 @@ export class CourseService {
 
         return course.rows[0]
     }
+
+    async getBestCourses() {
+
+        const best_courses = await this.course_repo.getBestCourses()
+
+        if (best_courses.rowCount === 0) throw new CustomError("Não há melhores cursos.", 400, "NOCOURSES_FOUND")
+
+        return best_courses.rows
+    }
 }

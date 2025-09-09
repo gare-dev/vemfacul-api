@@ -11,6 +11,18 @@ import authGuard from "../middleware/authGuard"
 const router = express.Router()
 const service = new CourseService(new CourseRepository(), new CourseInfoRepository(), new CourseAddressRepository())
 
+router.get("/course/bests", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const course = await service.getBestCourses()
+
+        return res.status(200).json({
+            data: course
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
 router.post("/course", upload.fields([{ name: "imagens", maxCount: 5 }, { name: 'logo', maxCount: 1 }]), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = JSON.parse(req.body.data);
@@ -117,5 +129,7 @@ router.get("/course/:id_course", authGuard, async (req: Request, res: Response, 
         next(err)
     }
 })
+
+
 
 export default router
