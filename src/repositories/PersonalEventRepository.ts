@@ -30,4 +30,27 @@ export class PersonalEventRepository {
         const query = "DELETE FROM personal_events WHERE id_user = $1 AND id_pevent = $2"
         return await pool.query(query, values)
     }
+
+    async setPersonalEventImportant(condition: boolean, id_pevent: string) {
+        const values = [condition, id_pevent]
+
+        const query = "UPDATE personal_events SET isimportant = $1 WHERE id_pevent = $2"
+        return await pool.query(query, values)
+    }
+
+    async checkPersonalEvent(id_user: string, id_pevent: string) {
+        const values = [id_user, id_pevent]
+
+        const query = "SELECT isimportant, isdone FROM personal_events WHERE id_user = $1 AND id_pevent = $2"
+        return await pool.query(query, values)
+    }
+
+    async setPersonalEventDone(condition: boolean, id_pevent: string) {
+        const values = [condition, id_pevent]
+
+        const query = "UPDATE personal_events SET isdone = $1 WHERE id_pevent = $2"
+        return await pool.query(query, values)
+    }
+
+
 }
