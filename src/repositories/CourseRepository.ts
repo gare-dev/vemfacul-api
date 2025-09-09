@@ -133,5 +133,28 @@ ORDER BY c.created_at;
     return await pool.query(query, values);
   }
 
+  async getBestCourses() {
+    const query = `SELECT 
+    c.nome_exibido,
+    e.uf,
+    i.logo,
+    AVG(a.stars) AS media_stars
+FROM 
+    cursinhos_table c 
+JOIN cursinhos_endereco_table e ON c.id_endereco = e.id_endereco
+JOIN cursinhos_info_table i ON c.id_cinfo = i.id_cinfo
+JOIN cursinho_avaliacoes a ON c.id_cursinho = a.id_cursinho
+WHERE 
+    c.is_active = TRUE
+GROUP BY 
+    c.id_cursinho, c.nome_exibido, e.uf, i.logo
+ORDER BY 
+    media_stars DESC
+LIMIT 3;
+`
+    return await pool.query(query)
+  }
+
+
 }
 
