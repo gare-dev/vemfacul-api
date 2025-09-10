@@ -47,10 +47,10 @@ export class UserService {
             throw new CustomError("Email ou senha incorretos.", 400, "INVALID_EMAIL_OR_PASSWORD")
         }
 
-        const { id_user, nome, username } = response.rows[0];
+        const { id_user, nome, username, role } = response.rows[0];
 
-        const token = this.jwtHandler.generateJWT({ id: id_user, email: user.email },)
-        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username }, 2 * 24 * 60 * 60)
+        const token = this.jwtHandler.generateJWT({ id: id_user, email: user.email, role: role },)
+        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username, role: role }, 2 * 24 * 60 * 60)
 
         return token
     }
@@ -198,11 +198,23 @@ export class UserService {
         const cachedUser = await this.redis.getRedis(`user_${id}`);
 
         if (cachedUser) {
-            return cachedUser as { nome: string, username: string }
+            return cachedUser as { nome: string, username: string, role: string }
         }
 
         throw new CustomError("Perfil não validado.", 400, "PROFILE_NOTVALIDATED")
     }
 
+    async getAdminUsers() {
+        const users = await this.repository.getAdminUsers()
 
+        return users.rows
+    }
+
+    async setAdminUserVerify(value: boolean, id_user: string) {
+        if (!id_user) throw new CustomError("ID User é necessário para atualizar o usuário.", 400, "IDUSER_MISSING")
+
+        const response = await this.repository.setAdminUserVerify(value, id_user)
+
+        return response.rows
+    }
 }

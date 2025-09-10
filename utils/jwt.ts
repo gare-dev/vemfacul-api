@@ -19,7 +19,7 @@ export class JWTClass {
         })
     }
 
-    public verifyJWT(token: string): { email: string, id: number, login?: string } | null {
+    public verifyJWT(token: string): { email: string, id: number, login?: string, role?: string } | null {
         try {
             return jwt.verify(token, this.jwt_token) as { email: string, id: number }
         } catch (err) {
