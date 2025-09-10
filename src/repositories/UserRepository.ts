@@ -19,7 +19,7 @@ export class UserRepository {
     async profileInfo(id_user: number) {
         const values = [id_user]
 
-        const query = "SELECT nome, username, foto FROM users_table WHERE id_user = $1"
+        const query = "SELECT nome, username, foto, role FROM users_table WHERE id_user = $1"
         return await pool.query(query, values)
     }
 
@@ -109,4 +109,16 @@ export class UserRepository {
         return await pool.query(query, values);
     }
 
+    async getAdminUsers() {
+
+        const query = "SELECT id_user, nome, email, created_at, username, foto, is_verified FROM users_table ORDER BY created_at DESC"
+        return await pool.query(query)
+    }
+
+    async setAdminUserVerify(value: boolean, id_user: string) {
+        const values = [value, id_user]
+
+        const query = "UPDATE users_table SET is_verified = $1 WHERE id_user = $2"
+        return await pool.query(query, values)
+    }
 }

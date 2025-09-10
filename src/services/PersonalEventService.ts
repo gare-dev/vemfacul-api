@@ -40,4 +40,26 @@ export class PersonalEventService {
 
         return deleted_event
     }
+
+    async setPersonalEventImportant(id_pevent: string, id_user: string) {
+        if (!id_pevent) throw new CustomError("ID PERSONAL EVENT é necessário para atualizar o evento.", 400, "IDPEVENT_MISSING")
+        if (!id_user) throw new CustomError("ID SER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
+
+        const check_event = await this.repository.checkPersonalEvent(id_user, id_pevent)
+
+        const updated_event = await this.repository.setPersonalEventImportant(!check_event.rows[0].isimportant, id_pevent)
+
+        return updated_event.rows[0]
+    }
+
+    async setPersonalEventDone(id_pevent: string, id_user: string) {
+        if (!id_pevent) throw new CustomError("ID PERSONAL EVENT é necessário para atualizar o evento.", 400, "IDPEVENT_MISSING")
+        if (!id_user) throw new CustomError("ID SER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
+
+        const check_event = await this.repository.checkPersonalEvent(id_user, id_pevent)
+
+        const updated_event = await this.repository.setPersonalEventDone(!check_event.rows[0].isdone, id_pevent)
+
+        return updated_event.rows[0]
+    }
 }

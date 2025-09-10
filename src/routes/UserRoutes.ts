@@ -8,6 +8,7 @@ import { MulterFile } from "../../utils/uploadPhoto";
 import authGuard from "../middleware/authGuard";
 import upload from "../config/multer";
 import { CustomError } from "../errors/HttpError";
+import adminAuth from "../middleware/adminAuth";
 
 const router = express.Router()
 const service = new UserService(new UserRepository(), new JWTClass(process.env.SECRET!), new Redis())
@@ -197,6 +198,7 @@ router.get("/user/validate", authGuard, async (req: Request, res: Response, next
             data: {
                 nome: validated_user.nome,
                 username: validated_user.username,
+                role: validated_user.role
             }
         });
 
@@ -233,6 +235,31 @@ router.delete("/user/auth", authGuard, async (req: Request, res: Response, next:
     } catch (err) {
         next(err)
     }
+})
+
+router.get("/admin/users", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const users = await service.getAdminUsers()
+
+        return res.status(200).json({
+            data: users
+        })
+    } catch (err) {
+        next(err)
+    }
+
+})
+
+router.patch("/admin/users/verify", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { value, id_user } = req.body
+        await service.setAdminUserVerify(value, id_user)
+
+        return res.sendStatus(200)
+    } catch (err) {
+        next(err)
+    }
+
 })
 
 export default router
