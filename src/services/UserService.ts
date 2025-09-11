@@ -217,4 +217,13 @@ export class UserService {
 
         return response.rows
     }
+
+    async setAdminUserRole(id_user: string, role: string) {
+        if (!id_user) throw new CustomError("ID User é necessário para atualizar o usuário.", 400, "IDUSER_MISSING")
+        if (!['admin', 'user', 'dono de cursinho'].includes(role)) throw new CustomError("Role inválido.", 400, "INVALID_ROLE")
+
+        const response = await this.repository.setAdminUserRole(id_user, role)
+
+        return response.rowCount
+    }
 }

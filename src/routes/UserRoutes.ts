@@ -259,7 +259,17 @@ router.patch("/admin/users/verify", adminAuth, async (req: Request, res: Respons
     } catch (err) {
         next(err)
     }
+})
 
+router.patch("/admin/users/role", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id_user, role } = req.body
+        await service.setAdminUserRole(id_user, role)
+
+        return res.sendStatus(200)
+    } catch (err) {
+        next(err)
+    }
 })
 
 export default router
