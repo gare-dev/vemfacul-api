@@ -116,11 +116,11 @@ router.post("/user/register", upload.single("imagem"), async (req: Request, res:
         const userData = JSON.parse(req.body.userData)
         const {
             nome, estado, nivel, escola, ano, vestibulares, passouVestibular,
-            universidade, curso, formouEM, trabalha, instituicao, materiasLecionadas, email
+            universidade, curso, formouEM, trabalha, instituicao, materiasLecionadas, email, username
         } = userData
         const photo = req.file as MulterFile
 
-        const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares }, photo)
+        const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares, username }, photo)
 
         return res.status(201).cookie("token", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({
             message: "Conta registrada com sucesso!",
@@ -259,7 +259,17 @@ router.patch("/admin/users/verify", adminAuth, async (req: Request, res: Respons
     } catch (err) {
         next(err)
     }
+})
 
+router.patch("/admin/users/role", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id_user, role } = req.body
+        await service.setAdminUserRole(id_user, role)
+
+        return res.sendStatus(200)
+    } catch (err) {
+        next(err)
+    }
 })
 
 export default router

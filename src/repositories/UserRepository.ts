@@ -50,20 +50,20 @@ export class UserRepository {
         switch (values[2]) {
             case "Aluno EM":
                 console.log(user.email)
-                values.push(user.escola, user.ano, user.vestibulares, user.email)
-                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, escola = $4, ano = $5, vestibulares = $6 WHERE email = $7 RETURNING id_user, nome, username", values)
+                values.push(user.escola, user.ano, user.vestibulares, user.email, user.username)
+                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, escola = $4, ano = $5, vestibulares = $6, username = $8 WHERE email = $7 RETURNING id_user, nome, username", values)
             case "Universitário":
-                values.push(user.passouVestibular, user.universidade, user.curso, user.email)
+                values.push(user.passouVestibular, user.universidade, user.curso, user.email, user.username)
 
-                return await pool.query("UPATE users_table SET nome = $1, estado = $2, nivel = $3, passouVestibular = $4, universidade = $5, curso = $6 WHERE email = $7 RETURNING id_user, nome, username", values)
+                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, passouVestibular = $4, universidade_estuda = $5, curso = $6, username = $8 WHERE email = $7 RETURNING id_user, nome, username", values)
             case "Vestibulando":
-                values.push(user.formouEM, user.trabalha, user.vestibulares, user.email)
+                values.push(user.formouEM, user.trabalha, user.vestibulares, user.email, user.username)
 
-                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, formouEM = $4, trabalha = $5, vestibulares = $6 WHERE email = $7 RETURNING id_user, nome, username", values)
+                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, formouEM = $4, trabalha = $5, vestibulares = $6, username = $8 WHERE email = $7 RETURNING id_user, nome, username", values)
             case "Professor":
-                values.push(user.instituicao, user.materiasLecionadas, user.email)
+                values.push(user.instituicao, user.materiasLecionadas, user.email, user.username)
 
-                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, instituicao = $4, materiasLecionadas = $5 WHERE email = $6 RETURNING id_user, nome, username", values)
+                return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, instituicao = $4, materias_lecionadas = $5, username = $7 WHERE email = $6 RETURNING id_user, nome, username", values)
         }
     }
 
@@ -111,7 +111,7 @@ export class UserRepository {
 
     async getAdminUsers() {
 
-        const query = "SELECT id_user, nome, email, created_at, username, foto, is_verified FROM users_table ORDER BY created_at DESC"
+        const query = "SELECT id_user, nome, email, created_at, username, foto, is_verified, role, senha FROM users_table ORDER BY created_at DESC"
         return await pool.query(query)
     }
 
@@ -119,6 +119,13 @@ export class UserRepository {
         const values = [value, id_user]
 
         const query = "UPDATE users_table SET is_verified = $1 WHERE id_user = $2"
+        return await pool.query(query, values)
+    }
+
+    async setAdminUserRole(id_user: string, role: string) {
+        const values = [role, id_user]
+
+        const query = "UPDATE users_table SET role = $1 WHERE id_user = $2"
         return await pool.query(query, values)
     }
 }
