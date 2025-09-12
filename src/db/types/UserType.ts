@@ -23,5 +23,6 @@ export type RegisterUserType = {
     instituicao?: string;
     email: string
     materiasLecionadas: any
+    username: string
 
 }
