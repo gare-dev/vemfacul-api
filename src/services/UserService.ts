@@ -238,4 +238,10 @@ export class UserService {
 
         return response.rowCount
     }
+
+    async deleteCookie(token: string) {
+        const id_user = this.jwtHandler.verifyJWT(token)?.id
+
+        this.redis.setRedis(`user_${id_user}`, null, 0)
+    }
 }
