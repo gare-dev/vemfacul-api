@@ -40,7 +40,6 @@ router.post("/user/local/event", authGuard, async (req: Request, res: Response, 
 
         await service.insertPersonalLocalEvent({ ...data, id_user: req.user.id })
 
-
         return res.sendStatus(201)
     } catch (err) {
         next(err)
