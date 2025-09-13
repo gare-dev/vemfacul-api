@@ -228,6 +228,8 @@ router.delete("/user/auth", authGuard, async (req: Request, res: Response, next:
 
         if (!token) throw new CustomError("Token não encontrado.", 401, "TOKEN_NOT_FOUND");
 
+        service.deleteCookie(token)
+
         return res.status(200).cookie("token", "", { expires: new Date(0) }).json({
             message: "Token removido com sucesso!",
             code: "TOKEN_REMOVED"
