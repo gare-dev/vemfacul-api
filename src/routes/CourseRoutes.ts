@@ -6,9 +6,22 @@ import { CourseAddressRepository } from "../repositories/CourseAddressRepository
 import upload from "../config/multer"
 import { CreateCourseAddressType, CreateCourseInfoType, CreateCourseType } from "../db/types/CourseType"
 import adminAuth from "../middleware/adminAuth"
+import authGuard from "../middleware/authGuard"
 
 const router = express.Router()
 const service = new CourseService(new CourseRepository(), new CourseInfoRepository(), new CourseAddressRepository())
+
+router.get("/course/bests", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const course = await service.getBestCourses()
+
+        return res.status(200).json({
+            data: course
+        })
+    } catch (err) {
+        next(err)
+    }
+})
 
 router.post("/course", upload.fields([{ name: "imagens", maxCount: 5 }, { name: 'logo', maxCount: 1 }]), async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -90,4 +103,33 @@ router.patch("/admin/course/:id_course/approve", adminAuth, async (req: Request,
     }
 
 })
+
+router.get("/courses", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const courses = await service.getCourse()
+
+        return res.status(200).json({
+            data: courses
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get("/course/:id_course", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_course = req.params.id_course
+
+        const course = await service.getCourseById(id_course)
+
+        return res.status(200).json({
+            data: course
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+
+
 export default router
