@@ -8,6 +8,7 @@ import { MulterFile } from "../../utils/uploadPhoto";
 import authGuard from "../middleware/authGuard";
 import upload from "../config/multer";
 import { CustomError } from "../errors/HttpError";
+import adminAuth from "../middleware/adminAuth";
 
 const router = express.Router()
 const service = new UserService(new UserRepository(), new JWTClass(process.env.SECRET!), new Redis())
@@ -115,11 +116,11 @@ router.post("/user/register", upload.single("imagem"), async (req: Request, res:
         const userData = JSON.parse(req.body.userData)
         const {
             nome, estado, nivel, escola, ano, vestibulares, passouVestibular,
-            universidade, curso, formouEM, trabalha, instituicao, materiasLecionadas, email
+            universidade, curso, formouEM, trabalha, instituicao, materiasLecionadas, email, username
         } = userData
         const photo = req.file as MulterFile
 
-        const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares }, photo)
+        const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares, username }, photo)
 
         return res.status(201).cookie("token", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({
             message: "Conta registrada com sucesso!",
@@ -197,6 +198,7 @@ router.get("/user/validate", authGuard, async (req: Request, res: Response, next
             data: {
                 nome: validated_user.nome,
                 username: validated_user.username,
+                role: validated_user.role
             }
         });
 
@@ -226,10 +228,47 @@ router.delete("/user/auth", authGuard, async (req: Request, res: Response, next:
 
         if (!token) throw new CustomError("Token não encontrado.", 401, "TOKEN_NOT_FOUND");
 
+        service.deleteCookie(token)
+
         return res.status(200).cookie("token", "", { expires: new Date(0) }).json({
             message: "Token removido com sucesso!",
             code: "TOKEN_REMOVED"
         });
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get("/admin/users", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const users = await service.getAdminUsers()
+
+        return res.status(200).json({
+            data: users
+        })
+    } catch (err) {
+        next(err)
+    }
+
+})
+
+router.patch("/admin/users/verify", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { value, id_user } = req.body
+        await service.setAdminUserVerify(value, id_user)
+
+        return res.sendStatus(200)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.patch("/admin/users/role", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id_user, role } = req.body
+        await service.setAdminUserRole(id_user, role)
+
+        return res.sendStatus(200)
     } catch (err) {
         next(err)
     }

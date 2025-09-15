@@ -58,8 +58,6 @@ export class CourseService {
     async selectAdminCourse() {
         const admin_course = await this.course_repo.selectAdminCourse()
 
-        if (admin_course.rowCount && admin_course.rowCount === 0) throw new CustomError("Nenhum cursinho para ser aprovado foi encontrado.", 400, "EMPTY_APPROVECOURSE")
-
         return admin_course.rows
     }
 
