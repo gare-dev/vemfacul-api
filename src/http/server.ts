@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import UserRoutes from "../routes/UserRoutes"
+import QuestoesRouter from "../routes/QuestoesRouter"
 import EventRoutes from "../routes/EventRoutes"
 import PostRoutes from "../routes/PostRoutes"
 import Adminroutes from "../routes/AdminRoutes"
@@ -34,7 +35,7 @@ app.use(Adminroutes)
 app.use(PersonalEventRoutes)
 app.use(CourseRoutes)
 app.use(ReviewRoutes)
-
+app.use(QuestoesRouter)
 app.use(errorHandler)
 
 export default app

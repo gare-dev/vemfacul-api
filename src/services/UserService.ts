@@ -204,5 +204,4 @@ export class UserService {
         throw new CustomError("Perfil não validado.", 400, "PROFILE_NOTVALIDATED")
     }
 
-
 }
