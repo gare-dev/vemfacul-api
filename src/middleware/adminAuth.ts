@@ -4,7 +4,7 @@ import { JWTClass } from "../../utils/jwt";
 const jwtHandler = new JWTClass(process.env.SECRET!)
 
 async function adminAuth(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers['admin-token'];
+    const token = req.cookies.token
 
     if (typeof token !== 'string') {
         return res.status(401).json({
@@ -23,7 +23,7 @@ async function adminAuth(req: Request, res: Response, next: NextFunction) {
     try {
         const isValid = jwtHandler.verifyJWT(token)
 
-        if (isValid) {
+        if (isValid?.role === "admin") {
             return next();
         }
 
@@ -33,8 +33,7 @@ async function adminAuth(req: Request, res: Response, next: NextFunction) {
         });
     } catch (error: unknown) {
         return res.status(500).json({
-            message: "Nós estamos enfrentando problemas, por favor, tente novamente mais tarde.",
-            error: error?.toString(),
+            message: "Erro ao validar token.",
             code: "INVALID_TOKEN"
         });
     }

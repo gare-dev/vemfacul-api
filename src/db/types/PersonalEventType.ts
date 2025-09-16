@@ -16,4 +16,5 @@ export type CreatePersonalEventType = {
 export type CreatePersonalLocalEventType = CreatePersonalEventType & {
     isImportant: boolean
     hora: string
+    data: string
 }

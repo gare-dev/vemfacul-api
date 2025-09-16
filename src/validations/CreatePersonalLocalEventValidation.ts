@@ -2,22 +2,15 @@ import { CreatePersonalEventType, CreatePersonalLocalEventType } from "../db/typ
 import { CustomError } from "../errors/HttpError";
 
 
-export function CreatePersonalLocalEventValidation(data: CreatePersonalLocalEventType) {
+export function CreatePersonalLocalEventValidation(data: CreatePersonalEventType) {
     const requiredFields = [
         "id_user",
         "day",
         "month",
         "year",
         "title",
-
         "descricao",
-
-
-
-
         "main_title",
-        "isImportant",
-
     ];
 
     const missingFields = requiredFields.filter(field => !data[field as keyof typeof data]);

@@ -36,9 +36,9 @@ router.get("/user/event", authGuard, async (req: Request, res: Response, next: N
 router.post("/user/local/event", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data: CreatePersonalLocalEventType = req.body
+        console.log(data)
 
         await service.insertPersonalLocalEvent({ ...data, id_user: req.user.id })
-
 
         return res.sendStatus(201)
     } catch (err) {
@@ -55,6 +55,36 @@ router.delete("/user/event/:id", authGuard, async (req: Request, res: Response, 
 
         return res.sendStatus(200)
 
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.patch("/user/event/important/:id", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_pevent = req.params.id.toString()
+        const id_user = req.user.id
+
+        const updated_event = await service.setPersonalEventImportant(id_pevent, id_user)
+
+        return res.status(200).json({
+            data: updated_event
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.patch("/user/event/done/:id", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_pevent = req.params.id.toString()
+        const id_user = req.user.id
+
+        const updated_event = await service.setPersonalEventDone(id_pevent, id_user)
+
+        return res.status(200).json({
+            data: updated_event
+        })
     } catch (err) {
         next(err)
     }

@@ -3,7 +3,7 @@ import pool from "../db/connect";
 export class QuestoesRepository {
     async insertQuestoes(index: number, id_disciplines: number, year: number) {
         const values = [index, id_disciplines, year]
-        const sql = "INSERT INTO questoes_table (index, id_disciplines, year) values ($1, $2, $3)"
+        const sql = "INSERT INTO questoes_table (index, id_disciplines, year) values ($1, $2, $3) RETURNING id"
         return pool.query(sql, values);
     }
     async selectQuestoes(index: number, year:number) {
