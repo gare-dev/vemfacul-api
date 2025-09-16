@@ -22,4 +22,10 @@ export class EventService {
     async getEvents() {
         return (await this.repository.getEvents()).rows
     }
+
+    async createCourseAdminEvent(id_cursinho: string, day: string, month: string, year: string, title: string, descricao: string, link: string, type: string, main_title: string, hora: string) {
+        // TODO tem que adicionar validação de dados 
+
+        return await this.repository.insertCourseAdminEvent(id_cursinho, day, month, year, title, descricao, link, type, main_title, hora)
+    }
 }

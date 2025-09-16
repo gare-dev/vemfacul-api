@@ -120,6 +120,7 @@ router.post("/user/register", upload.single("imagem"), async (req: Request, res:
         } = userData
         const photo = req.file as MulterFile
 
+
         const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares, username }, photo)
 
         return res.status(201).cookie("token", token, { httpOnly: true, secure: true, sameSite: "none", domain: process.env.DOMAIN, path: "/" }).json({

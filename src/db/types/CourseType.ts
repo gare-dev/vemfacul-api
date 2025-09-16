@@ -36,3 +36,9 @@ export type CreateCourseInfoType = {
     logo: Express.Multer.File | string
     imagens_espaco: MulterFile[] | string[]
 }
+
+export type CreateCourseAdminType = {
+    email: string
+    password: string
+    is_active: boolean
+}

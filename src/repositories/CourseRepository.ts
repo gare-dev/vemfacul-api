@@ -37,7 +37,12 @@ export class CourseRepository {
     const values = [id_course];
 
     const query = "UPDATE cursinhos_table SET is_active = TRUE WHERE id_cursinho = $1";
-    return await pool.query(query, values);
+    const query2 = "UPDATE users_table SET is_verified = TRUE WHERE id_cursinho = $1 AND role = 'dono de cursinho'";
+
+    const [res1, res2] = await Promise.all([
+      pool.query(query, values),
+      pool.query(query2, values)
+    ]);
   }
 
   async getCourse() {

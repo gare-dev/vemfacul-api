@@ -16,8 +16,6 @@ export class PostService {
 
         const posts = await this.repository.getPostagemByUsername(id_user, username)
 
-        if (posts.rowCount === 0) throw new CustomError("Esse usuário não tem posts.", 204, "MISSING_USERNAME")
-
         return posts.rows
     }
 
@@ -52,8 +50,6 @@ export class PostService {
     async selectAllPosts() {
 
         const posts = await this.repository.selectAllPosts()
-
-        if (posts.rowCount === 0) throw new CustomError("Não há posts.", 400, "NO_POSTS")
 
         return posts
     }

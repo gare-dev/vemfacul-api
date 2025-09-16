@@ -52,5 +52,12 @@ export class PersonalEventRepository {
         return await pool.query(query, values)
     }
 
+    async editPersonalEvent(id_pevent: string, id_user: string, title: string, descricao: string, hora: string) {
+        const values = [title, descricao, hora, id_user, id_pevent]
+
+        const query = "UPDATE personal_events SET title = $1, descricao = $2, hora = $3 WHERE id_user = $4 AND id_pevent = $5"
+        return await pool.query(query, values)
+    }
+
 
 }
