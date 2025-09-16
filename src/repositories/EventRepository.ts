@@ -42,4 +42,10 @@ export class EventsRepository {
         const values = [id_cursinho, day, month, year, title, descricao, link, type, main_title, hora];
         return pool.query(query, values)
     }
+
+    async deleteCourseEvent(id_event: string) {
+        const values = [id_event]
+        const query = "DELETE FROM events_table WHERE id_event = $1 AND id_cursinho "
+        return pool.query(query, values)
+    }
 }
