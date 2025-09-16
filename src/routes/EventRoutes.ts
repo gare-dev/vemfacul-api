@@ -4,10 +4,24 @@ import { EventService } from "../services/EventService";
 import { EventsRepository } from "../repositories/EventRepository";
 import { MulterFile } from "../../utils/uploadPhoto";
 import upload from "../config/multer";
+import courseAdminAuth from "../middleware/courseAdminAuth";
 
 
 const router = express.Router()
 const service = new EventService(new EventsRepository())
+
+router.post("/course/admin/event", courseAdminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { day, month, year, title, descricao, link, type, main_title, hora } = req.body
+        const id_cursinho = req.id_cursinho
+
+        await service.createCourseAdminEvent(id_cursinho, day, month, year, title, descricao, link, type, main_title, hora)
+
+        return res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+})
 
 router.post("/event", upload.single("imagem"), authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {

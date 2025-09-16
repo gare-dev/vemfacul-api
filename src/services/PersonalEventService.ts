@@ -19,8 +19,6 @@ export class PersonalEventService {
 
         const personal_events = await this.repository.getPersonalEventsById(id_user)
 
-        if (personal_events.rowCount === 0) throw new CustomError("Não há eventos pessoais registrados.", 400, "EMPTY_PERSONALEVENTS")
-
         return personal_events.rows
     }
 

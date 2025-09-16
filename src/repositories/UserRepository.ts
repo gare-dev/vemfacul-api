@@ -128,4 +128,12 @@ export class UserRepository {
         const query = "UPDATE users_table SET role = $1 WHERE id_user = $2"
         return await pool.query(query, values)
     }
+
+
+    async insertCourseUser(email: string, senha: string, nivel: string, is_verified: boolean, estado: string, nome: string, username: string, foto: string, header: string, id_cursinho: string) {
+        const values = [email, senha, nivel, is_verified, estado, nome, username, foto, header, "dono de cursinho", id_cursinho]
+
+        const query = "INSERT INTO users_table (email, senha, nivel, is_verified, estado, nome, username, foto, header, role, id_cursinho) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_user"
+        return await pool.query(query, values)
+    }
 }
