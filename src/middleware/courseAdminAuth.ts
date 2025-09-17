@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { JWTClass } from "../../utils/jwt";
 
+
 const jwtHandler = new JWTClass(process.env.SECRET!)
 
-async function adminAuth(req: Request, res: Response, next: NextFunction) {
+async function courseAdminAuth(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.token
 
     if (typeof token !== 'string') {
@@ -23,7 +24,8 @@ async function adminAuth(req: Request, res: Response, next: NextFunction) {
     try {
         const isValid = jwtHandler.verifyJWT(token)
 
-        if (isValid?.role === "admin") {
+        if (isValid?.role === "dono de cursinho" && isValid.id_cursinho) {
+            req.id_cursinho = isValid.id_cursinho
             return next();
         }
 
@@ -37,7 +39,6 @@ async function adminAuth(req: Request, res: Response, next: NextFunction) {
             code: "INVALID_TOKEN"
         });
     }
-
 }
 
-export default adminAuth
+export default courseAdminAuth

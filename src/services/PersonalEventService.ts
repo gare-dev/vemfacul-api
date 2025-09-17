@@ -19,8 +19,6 @@ export class PersonalEventService {
 
         const personal_events = await this.repository.getPersonalEventsById(id_user)
 
-        if (personal_events.rowCount === 0) throw new CustomError("Não há eventos pessoais registrados.", 400, "EMPTY_PERSONALEVENTS")
-
         return personal_events.rows
     }
 
@@ -39,5 +37,40 @@ export class PersonalEventService {
         if (deleted_event.rowCount === 0) throw new CustomError("Nenhum evento com esse ID foi encontrado.", 400, "INVALID_IDPEVENT")
 
         return deleted_event
+    }
+
+    async setPersonalEventImportant(id_pevent: string, id_user: string) {
+        if (!id_pevent) throw new CustomError("ID PERSONAL EVENT é necessário para atualizar o evento.", 400, "IDPEVENT_MISSING")
+        if (!id_user) throw new CustomError("ID SER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
+
+        const check_event = await this.repository.checkPersonalEvent(id_user, id_pevent)
+
+        const updated_event = await this.repository.setPersonalEventImportant(!check_event.rows[0].isimportant, id_pevent)
+
+        return updated_event.rows[0]
+    }
+
+    async setPersonalEventDone(id_pevent: string, id_user: string) {
+        if (!id_pevent) throw new CustomError("ID PERSONAL EVENT é necessário para atualizar o evento.", 400, "IDPEVENT_MISSING")
+        if (!id_user) throw new CustomError("ID SER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
+
+        const check_event = await this.repository.checkPersonalEvent(id_user, id_pevent)
+
+        const updated_event = await this.repository.setPersonalEventDone(!check_event.rows[0].isdone, id_pevent)
+
+        return updated_event.rows[0]
+    }
+
+    async editPersonalEvent(id_pevent: string, id_user: string, title: string, descricao: string, hora: string) {
+        if (!id_pevent) throw new CustomError("ID PERSONAL EVENT é necessário para atualizar o evento.", 400, "IDPEVENT_MISSING")
+        if (!id_user) throw new CustomError("ID USER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
+        if (!title) throw new CustomError("Título é necessário para atualizar o evento.", 400, "TITLE_MISSING")
+        if (!descricao) throw new CustomError("Descrição é necessária para atualizar o evento.", 400, "DESCRICAO_MISSING")
+
+        const updated_event = await this.repository.editPersonalEvent(id_pevent, id_user, title, descricao, hora)
+
+        if (updated_event.rowCount === 0) throw new CustomError("Nenhum evento com esse ID foi encontrado.", 400, "INVALID_IDPEVENT")
+
+        return updated_event.rows[0]
     }
 }

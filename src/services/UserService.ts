@@ -47,10 +47,22 @@ export class UserService {
             throw new CustomError("Email ou senha incorretos.", 400, "INVALID_EMAIL_OR_PASSWORD")
         }
 
-        const { id_user, nome, username } = response.rows[0];
+        const { id_user, nome, username, role, id_cursinho } = response.rows[0];
 
-        const token = this.jwtHandler.generateJWT({ id: id_user, email: user.email },)
-        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username }, 2 * 24 * 60 * 60)
+        const payload: { id: string, email: string, role: string, id_cursinho?: string } = {
+            id: id_user,
+            email: user.email,
+            role: role,
+        }
+
+        console.log(id_cursinho)
+
+        if (id_cursinho !== "NULL") {
+            payload.id_cursinho = id_cursinho
+        }
+
+        const token = this.jwtHandler.generateJWT(payload)
+        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username, role: role, id_cursinho: id_cursinho }, 2 * 24 * 60 * 60)
 
         return token
     }
@@ -108,6 +120,21 @@ export class UserService {
 
     async registerAccount(user: RegisterUserType, photo: MulterFile) {
         if (!photo) throw new CustomError("É necessário a foto do usuário para registrar a foto de perfil.", 400, "MISSING_PHOTO")
+        if (user.nome && user.nome.length > 25) throw new CustomError("Nome deve ser menor que 25 caracteres.", 400, "NAMELENGTH_INVALID")
+        if (user.username && user.username.length > 25) throw new CustomError("Username deve ser menor que 25 caracteres.", 400, "USERNAMELENGTH_INVALID")
+        if (user.estado && !["SP", "RJ", "MG", "ES", "BA", "SE", "AL", "PE", "PB", "RN", "CE", "PI", "MA", "PA", "AP", "TO", "MT", "MS", "GO", "DF", "RO", "AC", "AM", "RR"].includes(user.estado)) throw new CustomError("Estado inválido", 400, "STATE_INVALID")
+        if (user.nivel && !["Aluno EM", "Universitário", "Vestibulando", "Professor"].includes(user.nivel)) throw new CustomError("Nível inválido", 400, "LEVEL_INVALID")
+        if (user.escola && user.escola.length > 30) throw new CustomError("Escola deve ser menor que 30 caracteres.", 400, "SCHOOLLENGTH_INVALID")
+        console.log(user.ano)
+        if (user.ano && !["1º", "2º", "3º"].includes(user.ano)) throw new CustomError("Ano inválido.", 400, "GRADE_INVALID")
+        const validVestibulares = ["FUVEST", "ITA", "ENEM", "VUNESP", "UNICAMP", "Outros..."];
+        // TODO transforme isso numa funcao pelo amor de deus
+        if (
+            user.vestibulares &&
+            !user.vestibulares.every((vestibular: string) => validVestibulares.includes(vestibular))
+        ) {
+            throw new CustomError("Vestibular inválido.", 400, "VESTIBULAR_INVALID");
+        }
 
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
         if (!allowedTypes.includes(photo.mimetype)) {
@@ -118,8 +145,6 @@ export class UserService {
         await this.repository.updateUserPhoto({ email: this.jwtHandler.verifyJWT(user.email)?.email as string, imageURL: image_url })
 
         const response = await this.repository.registerAccount({ ...user, email: this.jwtHandler.verifyJWT(user.email)?.email as string })
-
-
 
         const { id_user, nome, username } = response?.rows[0];
 
@@ -198,11 +223,38 @@ export class UserService {
         const cachedUser = await this.redis.getRedis(`user_${id}`);
 
         if (cachedUser) {
-            return cachedUser as { nome: string, username: string }
+            return cachedUser as { nome: string, username: string, role: string }
         }
 
         throw new CustomError("Perfil não validado.", 400, "PROFILE_NOTVALIDATED")
     }
 
+    async getAdminUsers() {
+        const users = await this.repository.getAdminUsers()
 
+        return users.rows
+    }
+
+    async setAdminUserVerify(value: boolean, id_user: string) {
+        if (!id_user) throw new CustomError("ID User é necessário para atualizar o usuário.", 400, "IDUSER_MISSING")
+
+        const response = await this.repository.setAdminUserVerify(value, id_user)
+
+        return response.rows
+    }
+
+    async setAdminUserRole(id_user: string, role: string) {
+        if (!id_user) throw new CustomError("ID User é necessário para atualizar o usuário.", 400, "IDUSER_MISSING")
+        if (!['admin', 'user', 'dono de cursinho'].includes(role)) throw new CustomError("Role inválido.", 400, "INVALID_ROLE")
+
+        const response = await this.repository.setAdminUserRole(id_user, role)
+
+        return response.rowCount
+    }
+
+    async deleteCookie(token: string) {
+        const id_user = this.jwtHandler.verifyJWT(token)?.id
+
+        this.redis.setRedis(`user_${id_user}`, null, 1)
+    }
 }

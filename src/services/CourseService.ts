@@ -1,26 +1,32 @@
-import { CreateCourseAddressType, CreateCourseInfoType, CreateCourseType } from "../db/types/CourseType";
+import { CreateCourseAddressType, CreateCourseAdminType, CreateCourseInfoType, CreateCourseType } from "../db/types/CourseType";
 import { CourseAddressRepository } from "../repositories/CourseAddressRepository";
 import { CourseInfoRepository } from "../repositories/CourseInfoRepository";
 import { CourseRepository } from "../repositories/CourseRepository";
 import uploadCoursePhoto from "../../utils/uploadCoursePhoto"
 import { MulterFile } from "../../utils/uploadPhoto";
 import { CustomError } from "../errors/HttpError";
+import { UserRepository } from "../repositories/UserRepository";
 
 export class CourseService {
     constructor(
         private course_repo: CourseRepository,
         private course_info_repo: CourseInfoRepository,
-        private course_address_repo: CourseAddressRepository
+        private course_address_repo: CourseAddressRepository,
+        private users_repo: UserRepository
     ) { }
 
-    async insertCursinho(course_basic: CreateCourseType, course_info: CreateCourseInfoType, course_address: CreateCourseAddressType) {
+    async insertCursinho(course_basic: CreateCourseType, course_info: CreateCourseInfoType, course_address: CreateCourseAddressType, admin: CreateCourseAdminType) {
 
         const [id_endereco, id_cinfo] = await Promise.all([
             this.insertAddress(course_address),
             this.insertInfo(course_info, course_basic.nome_exibido)
         ])
 
-        return await this.insertCourse({ ...course_basic, id_endereco: id_endereco, id_cinfo: id_cinfo })
+        const cursinho = await this.insertCourse({ ...course_basic, id_endereco: id_endereco, id_cinfo: id_cinfo.id_cinfo }) as { id_cursinho: string, nome_exibido: string, nome: string }
+
+        if (cursinho) {
+            await this.users_repo.insertCourseUser(admin.email, admin.password, "Cursinho", false, course_address.uf, course_basic.nome, course_basic.nome_exibido.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_"), id_cinfo.logo, id_cinfo.logo, cursinho.id_cursinho)
+        }
     }
 
     async insertAddress(course_address: CreateCourseAddressType) {
@@ -43,7 +49,7 @@ export class CourseService {
         const info = await this.course_info_repo.insertCourseInfo({ ...course_info, imagens_espaco: images_url, logo: logo_url })
 
         if (info.rowCount && info.rowCount >= 1) {
-            return info.rows[0].id_cinfo
+            return info.rows[0]
         }
     }
 
@@ -51,14 +57,12 @@ export class CourseService {
         const course = await this.course_repo.insertCourse(course_basic)
 
         if (course.rowCount && course.rowCount >= 1) {
-            return true
+            return course.rows[0]
         }
     }
 
     async selectAdminCourse() {
         const admin_course = await this.course_repo.selectAdminCourse()
-
-        if (admin_course.rowCount && admin_course.rowCount === 0) throw new CustomError("Nenhum cursinho para ser aprovado foi encontrado.", 400, "EMPTY_APPROVECOURSE")
 
         return admin_course.rows
     }
@@ -67,10 +71,6 @@ export class CourseService {
         if (!id_course) throw new CustomError("ID Course é necessário para aprovar um cursinho.", 400, "IDCOURSE_MISSING")
 
         const approved_course = await this.course_repo.approveCourse(id_course)
-
-        if (approved_course.rowCount === 0) {
-            throw new CustomError("Cursinho não encontrado.", 400, "NOTFOUND_COURSE")
-        }
 
         return approved_course
     }
