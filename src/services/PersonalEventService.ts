@@ -63,10 +63,9 @@ export class PersonalEventService {
 
     async editPersonalEvent(id_pevent: string, id_user: string, title: string, descricao: string, hora: string) {
         if (!id_pevent) throw new CustomError("ID PERSONAL EVENT é necessário para atualizar o evento.", 400, "IDPEVENT_MISSING")
-        if (!id_user) throw new CustomError("ID SER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
+        if (!id_user) throw new CustomError("ID USER é necessário para atualizar o evento.", 400, "IDUSER_MISSING")
         if (!title) throw new CustomError("Título é necessário para atualizar o evento.", 400, "TITLE_MISSING")
         if (!descricao) throw new CustomError("Descrição é necessária para atualizar o evento.", 400, "DESCRICAO_MISSING")
-        if (!hora) throw new CustomError("Hora é necessária para atualizar o evento.", 400, "HORA_MISSING")
 
         const updated_event = await this.repository.editPersonalEvent(id_pevent, id_user, title, descricao, hora)
 
