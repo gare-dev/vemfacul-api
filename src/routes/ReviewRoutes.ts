@@ -14,8 +14,10 @@ router.post("/course/review", authGuard, async (req: Request, res: Response, nex
     const id_user = req.user.id
 
     try {
-        await service.insertReview(id_user, id_cursinho, stars, content)
-        res.sendStatus(201)
+        const response = await service.insertReview(id_user, id_cursinho, stars, content)
+        res.status(201).json({
+            created_at: response.rows[0].created_at
+        })
     } catch (error) {
         next(error)
     }

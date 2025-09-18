@@ -77,7 +77,26 @@ export class UserRepository {
     async userProfile(username: string) {
         const values = [username]
 
-        const query = "SELECT nome, username, foto, header, descricao, posts_number, vestibulares, materias_lecionadas, nivel FROM users_table WHERE username = $1"
+        const query = `
+SELECT
+    u.nome,
+    u.username,
+    u.foto,
+    u.header,
+    u.descricao,
+    u.posts_number,
+    u.vestibulares,
+    u.materias_lecionadas,
+    u.nivel,
+    (
+        SELECT COUNT(*)
+        FROM user_to_questao_table q
+        WHERE q.id_user = u.id_user
+          AND q.iscorret = TRUE
+    ) AS acertosUser
+FROM users_table u
+WHERE u.username ILIKE $1;
+`
         return await pool.query(query, values)
     }
 

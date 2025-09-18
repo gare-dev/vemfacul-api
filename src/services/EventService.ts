@@ -3,6 +3,7 @@ import { CreateEventType } from "../db/types/EventsType";
 import { EventsRepository } from "../repositories/EventRepository";
 import { CreateEventValidation } from "../validations/CreateEventValidation";
 import { uploadEventImage } from "../../utils/uploadEventImage"
+import { CustomError } from "../errors/HttpError";
 
 export class EventService {
     constructor(private repository: EventsRepository) { }
@@ -27,5 +28,14 @@ export class EventService {
         // TODO tem que adicionar validação de dados 
 
         return await this.repository.insertCourseAdminEvent(id_cursinho, day, month, year, title, descricao, link, type, main_title, hora)
+    }
+
+    async getCourseEventById(id_cursinho: string) {
+        if (!id_cursinho) throw new CustomError("ID Cursinho é necessário para buscar os eventos.", 400, "IDCURSINHO_MISSING")
+
+        const events = await this.repository.getCourseEventById(id_cursinho)
+
+        return events.rows
+
     }
 }

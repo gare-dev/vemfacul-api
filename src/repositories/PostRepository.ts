@@ -77,30 +77,38 @@ ORDER BY
 
     async selectAllPosts() {
         const query = `
-            SELECT
-                p.id_postagem,
-                p.content,
-                p.created_at,
-                u.username,
-                u.id_user,
-                u.nome,
-                u.foto,
-                (
-                    select count(*)
-                    from postagens_table
-                    where coments = true AND postagem_pai = p.id_postagem
-                ) AS total_comments,
-                (
-                    SELECT COUNT(*) 
-                    FROM postagenslike_table l 
-                    WHERE l.id_postagem = p.id_postagem
-                ) AS total_likes
-            FROM
-                postagens_table p
-            JOIN
-                users_table u ON p.id_user = u.id_user
-            ORDER BY
-                p.created_at DESC;`
+            select
+  p.id_postagem,
+  p.content,
+  p.created_at,
+  u.username,
+  u.id_user,
+  u.nome,
+  u.foto,
+  (
+    select
+      count(*)
+    from
+      postagens_table
+    where
+      coments = true
+      and postagem_pai = p.id_postagem
+  ) as total_comments,
+  (
+    select
+      COUNT(*)
+    from
+      postagenslike_table l
+    where
+      l.id_postagem = p.id_postagem
+  ) as total_likes
+from
+  postagens_table p
+  join users_table u on p.id_user = u.id_user
+where
+  coments = false
+order by
+  p.created_at desc;`
         return await pool.query(query)
     }
 

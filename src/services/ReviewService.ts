@@ -12,7 +12,7 @@ export class ReviewService {
     ) { }
 
     async insertReview(id_user: string, id_cursinho: string, stars: number, content: string) {
-        if (!id_user || !id_cursinho || !stars || !content) {
+        if (!id_user || !id_cursinho || !content) {
             throw new CustomError("All fields are required", 400, "MISSING_FIELDS");
         }
 
