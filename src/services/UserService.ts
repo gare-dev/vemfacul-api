@@ -256,5 +256,6 @@ export class UserService {
         const id_user = this.jwtHandler.verifyJWT(token)?.id
 
         this.redis.setRedis(`user_${id_user}`, null, 1)
+        this.redis.setRedis(`user_profile_${id_user}`, null, 1)
     }
 }
