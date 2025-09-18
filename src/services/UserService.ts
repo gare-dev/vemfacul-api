@@ -47,10 +47,22 @@ export class UserService {
             throw new CustomError("Email ou senha incorretos.", 400, "INVALID_EMAIL_OR_PASSWORD")
         }
 
-        const { id_user, nome, username, role } = response.rows[0];
+        const { id_user, nome, username, role, id_cursinho } = response.rows[0];
 
-        const token = this.jwtHandler.generateJWT({ id: id_user, email: user.email, role: role },)
-        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username, role: role }, 2 * 24 * 60 * 60)
+        const payload: { id: string, email: string, role: string, id_cursinho?: string } = {
+            id: id_user,
+            email: user.email,
+            role: role,
+        }
+
+        console.log(id_cursinho)
+
+        if (id_cursinho !== "NULL") {
+            payload.id_cursinho = id_cursinho
+        }
+
+        const token = this.jwtHandler.generateJWT(payload)
+        await this.redis.setRedis(`user_${id_user}`, { id: id_user, email: user.email, nome: nome, username: username, role: role, id_cursinho: id_cursinho }, 2 * 24 * 60 * 60)
 
         return token
     }
@@ -113,7 +125,8 @@ export class UserService {
         if (user.estado && !["SP", "RJ", "MG", "ES", "BA", "SE", "AL", "PE", "PB", "RN", "CE", "PI", "MA", "PA", "AP", "TO", "MT", "MS", "GO", "DF", "RO", "AC", "AM", "RR"].includes(user.estado)) throw new CustomError("Estado inválido", 400, "STATE_INVALID")
         if (user.nivel && !["Aluno EM", "Universitário", "Vestibulando", "Professor"].includes(user.nivel)) throw new CustomError("Nível inválido", 400, "LEVEL_INVALID")
         if (user.escola && user.escola.length > 30) throw new CustomError("Escola deve ser menor que 30 caracteres.", 400, "SCHOOLLENGTH_INVALID")
-        if (user.ano && !["1°", "2°", "3°"].includes(user.ano)) throw new CustomError("Ano inválido.", 400, "GRADE_INVALID")
+        console.log(user.ano)
+        if (user.ano && !["1º", "2º", "3º"].includes(user.ano)) throw new CustomError("Ano inválido.", 400, "GRADE_INVALID")
         const validVestibulares = ["FUVEST", "ITA", "ENEM", "VUNESP", "UNICAMP", "Outros..."];
         // TODO transforme isso numa funcao pelo amor de deus
         if (
@@ -242,6 +255,6 @@ export class UserService {
     async deleteCookie(token: string) {
         const id_user = this.jwtHandler.verifyJWT(token)?.id
 
-        this.redis.setRedis(`user_${id_user}`, null, 0)
+        this.redis.setRedis(`user_${id_user}`, null, 1)
     }
 }

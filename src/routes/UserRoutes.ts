@@ -21,7 +21,7 @@ router.post("/user/email", async (req: Request, res: Response, next: NextFunctio
 
         const token = await service.createUser({ email, password })
 
-        sendConfirmationEmail(email, token!)
+        await sendConfirmationEmail(email, token!)
         return res.status(201).json({
             message: "Conta criada, cheque o seu email.",
             code: "ACCOUNT_CREATED_CHECK_EMAIL"
@@ -119,6 +119,7 @@ router.post("/user/register", upload.single("imagem"), async (req: Request, res:
             universidade, curso, formouEM, trabalha, instituicao, materiasLecionadas, email, username
         } = userData
         const photo = req.file as MulterFile
+
 
         const token = await service.registerAccount({ email, materiasLecionadas, trabalha, ano, curso, escola, estado, formouEM, instituicao, nivel, nome, passouVestibular, universidade, vestibulares, username }, photo)
 

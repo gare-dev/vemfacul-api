@@ -37,7 +37,12 @@ export class CourseRepository {
     const values = [id_course];
 
     const query = "UPDATE cursinhos_table SET is_active = TRUE WHERE id_cursinho = $1";
-    return await pool.query(query, values);
+    const query2 = "UPDATE users_table SET is_verified = TRUE WHERE id_cursinho = $1 AND role = 'dono de cursinho'";
+
+    const [res1, res2] = await Promise.all([
+      pool.query(query, values),
+      pool.query(query2, values)
+    ]);
   }
 
   async getCourse() {
@@ -49,6 +54,13 @@ export class CourseRepository {
   l.uf,
   i.faixa_preco,
   i.logo,
+  l.estado,
+  l.regiao,
+  i.modalidades,
+  i.disciplinas_foco,
+  i.tem_bolsa,
+  i.aceita_programas_publico,
+
   (
   SELECT 
     AVG(stars) as media
@@ -71,6 +83,8 @@ JOIN
   cursinhos_info_table i ON c.id_cursinho = i.id_cinfo
 JOIN
   cursinhos_endereco_table l ON l.id_endereco = c.id_endereco
+WHERE 
+  c.is_active = TRUE
 ORDER BY 
   c.created_at
 `

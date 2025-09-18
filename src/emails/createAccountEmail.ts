@@ -1,11 +1,11 @@
-import transporter from "../config/smtp"
+import resend from "../config/smtp"
 import createAccountHtml from "../views/emails/createAccountHtml"
 
 
 const sendConfirmationEmail = async (destinatario: string, confirmationLink: string) => {
 
     try {
-        const data = await transporter.emails.send({
+        const data = await resend.emails.send({
             from: "Equipe Chapera <no-reply@chapera.org>",
             to: destinatario,
             subject: 'Confirme sua conta',

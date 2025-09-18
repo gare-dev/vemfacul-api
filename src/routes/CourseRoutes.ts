@@ -4,12 +4,13 @@ import { CourseRepository } from "../repositories/CourseRepository"
 import { CourseInfoRepository } from "../repositories/CourseInfoRepository"
 import { CourseAddressRepository } from "../repositories/CourseAddressRepository"
 import upload from "../config/multer"
-import { CreateCourseAddressType, CreateCourseInfoType, CreateCourseType } from "../db/types/CourseType"
+import { CreateCourseAddressType, CreateCourseAdminType, CreateCourseInfoType, CreateCourseType } from "../db/types/CourseType"
 import adminAuth from "../middleware/adminAuth"
 import authGuard from "../middleware/authGuard"
+import { UserRepository } from "../repositories/UserRepository"
 
 const router = express.Router()
-const service = new CourseService(new CourseRepository(), new CourseInfoRepository(), new CourseAddressRepository())
+const service = new CourseService(new CourseRepository(), new CourseInfoRepository(), new CourseAddressRepository(), new UserRepository())
 
 router.get("/course/bests", async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -69,7 +70,13 @@ router.post("/course", upload.fields([{ name: "imagens", maxCount: 5 }, { name: 
             imagens_espaco: imgs,
         };
 
-        await service.insertCursinho(course, courseInfo, address)
+        const admin: CreateCourseAdminType = {
+            email: login.email,
+            password: login.password,
+            is_active: false,
+        }
+
+        await service.insertCursinho(course, courseInfo, address, admin)
 
         return res.sendStatus(201)
 

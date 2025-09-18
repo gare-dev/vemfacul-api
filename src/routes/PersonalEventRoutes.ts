@@ -90,4 +90,20 @@ router.patch("/user/event/done/:id", authGuard, async (req: Request, res: Respon
     }
 })
 
+router.patch("/user/event/:id_pevent", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_pevent = req.params.id_pevent.toString()
+        const id_user = req.user.id
+        const { title, descricao, hora } = req.body
+        const updated_event = await service.editPersonalEvent(id_pevent, id_user, title, descricao, hora)
+
+        return res.status(200).json({
+            data: updated_event
+        })
+    } catch (err) {
+        next(err)
+    }
+
+})
+
 export default router

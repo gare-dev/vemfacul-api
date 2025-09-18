@@ -32,7 +32,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
         const responseSize = responseBody ? JSON.stringify(responseBody).length : 0;
 
         try {
-            await pool.query(
+            pool.query(
                 `INSERT INTO request_logs 
           (timestamp, method, url, query_params, request_body, request_headers, 
            status_code, response_body, response_size, duration_ms, 
