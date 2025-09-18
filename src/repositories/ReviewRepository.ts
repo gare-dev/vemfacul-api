@@ -4,7 +4,7 @@ export class ReviewRepository {
     async insertReview(id_user: string, id_cursinho: string, stars: number, content: string) {
         const values = [id_user, id_cursinho, stars, content];
 
-        const query = "INSERT INTO cursinho_avaliacoes (id_user, id_cursinho, stars, content) VALUES ($1, $2, $3, $4)";
+        const query = "INSERT INTO cursinho_avaliacoes (id_user, id_cursinho, stars, content) VALUES ($1, $2, $3, $4) RETURNING created_at";
         return pool.query(query, values);
     }
 }
