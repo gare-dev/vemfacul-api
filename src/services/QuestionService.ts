@@ -19,13 +19,21 @@ export class QuestionService {
         if (verifyQuestion.rowCount) {
             const id_questao = verifyQuestion.rows[0].id
             console.log("Está questão já existe: ", id_questao)
-            this.repository.insertQuestoesToUser(id_questao, id_user, isCorret)
+            if((await this.repository.selectQuestoesTouser(id_questao, id_user)).rowCount) {
+                console.log("usuario já fez esta questao");
+            }
+            await this.repository.insertQuestoesToUser(id_questao, id_user, isCorret)
         }
         else {
             const newQuestion = await this.repository.insertQuestoes(index, id_diciplina, year)
             const id_questao = newQuestion.rows[0].id
             console.log("Criando a questao: id_", id_questao)
-            this.repository.insertQuestoesToUser(id_questao, id_user, isCorret)
+            await this.repository.insertQuestoesToUser(id_questao, id_user, isCorret)
         }
+    }
+
+    async rankinQuestion() {
+        const promise = await this.repository.selectRankin();
+             return promise.rows
     }
 }

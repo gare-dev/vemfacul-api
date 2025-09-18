@@ -216,8 +216,6 @@ export class UserService {
         throw new CustomError("Perfil não validado.", 400, "PROFILE_NOTVALIDATED")
     }
 
-<<<<<<< HEAD
-=======
     async getAdminUsers() {
         const users = await this.repository.getAdminUsers()
 
@@ -246,5 +244,4 @@ export class UserService {
 
         this.redis.setRedis(`user_${id_user}`, null, 0)
     }
->>>>>>> bb75f3eb52c69ae163c346a0ce717e616a6019f7
 }

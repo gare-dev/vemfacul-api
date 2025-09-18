@@ -18,5 +18,17 @@ router.post("/exercicios/questoes/usuario", async (req: Request, res: Response, 
         next(err)
     }
 })
+router.get("/exercicios/questoes/ranking", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const promise = await service.rankinQuestion()
+        res.status(200).json({
+            message: "Ranking",
+            data: promise
+        })
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+})
 
 export default router

@@ -41,13 +41,10 @@ app.use(Adminroutes)
 app.use(PersonalEventRoutes)
 app.use(CourseRoutes)
 app.use(ReviewRoutes)
-<<<<<<< HEAD
 app.use(QuestoesRouter)
-=======
 app.use(RequestLoggerRoutes)
 
 app.use(errorLogger)
->>>>>>> bb75f3eb52c69ae163c346a0ce717e616a6019f7
 app.use(errorHandler)
 
 export default app
