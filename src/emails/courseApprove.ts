@@ -5,7 +5,7 @@ const sendCourseApproveEmail = async (destinatario: string) => {
 
     try {
         const data = await resend.emails.send({
-            from: "Equipe Chapera <no-reply@chapera.org>",
+            from: "VemFacul <no-reply@vemfacul.com>",
             to: destinatario,
             subject: 'Seu cursinho foi aprovado!',
             html: courseApproveHtml(),

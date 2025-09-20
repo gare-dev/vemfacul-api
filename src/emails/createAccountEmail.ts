@@ -6,7 +6,7 @@ const sendConfirmationEmail = async (destinatario: string, confirmationLink: str
 
     try {
         const data = await resend.emails.send({
-            from: "Equipe Chapera <no-reply@chapera.org>",
+            from: "VemFacul <no-reply@vemfacul.com>",
             to: destinatario,
             subject: 'Confirme sua conta',
             html: createAccountHtml(confirmationLink),
