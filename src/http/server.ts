@@ -26,7 +26,8 @@ app.use(cors({
         "http://localhost:3002",
         "https://invest-liard.vercel.app",
         "https://www.chapera.org",
-        "https://www.chapaera.org"
+        "https://www.chapaera.org",
+        "https://www.vemfacul.com"
     ]
 }));
 app.use(express.json())
