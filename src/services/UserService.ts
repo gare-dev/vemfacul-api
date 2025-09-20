@@ -26,7 +26,7 @@ export class UserService {
                 throw new CustomError("Perfil não criado, tente novamente mais tarde.", 400, "UNKNOWN_ERROR")
             }
             if (response.rowCount! > 0) {
-                console.log("Usuário criado com sucesso.")
+                console.log("✅ Usuário criado com sucesso.")
             }
             return this.jwtHandler.generateJWT({ email: user.email })
         } catch (err: unknown) {
@@ -256,5 +256,11 @@ export class UserService {
         const id_user = this.jwtHandler.verifyJWT(token)?.id
 
         this.redis.setRedis(`user_${id_user}`, null, 1)
+        this.redis.setRedis(`user_profile_${id_user}`, null, 1)
+    }
+
+    async getUsersSearchBar(nome: string) {
+
+        return this.repository.getUsersSearchBar(nome)
     }
 }

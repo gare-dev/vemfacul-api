@@ -155,4 +155,17 @@ WHERE u.username ILIKE $1;
         const query = "INSERT INTO users_table (email, senha, nivel, is_verified, estado, nome, username, foto, header, role, id_cursinho) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_user"
         return await pool.query(query, values)
     }
+
+    async getUsersSearchBar(name: string) {
+        const values = [`${name}%`, `%${name}%`];
+
+        const query = `
+  SELECT id_user, foto, username, nome 
+  FROM users_table 
+  WHERE username ILIKE $1 
+     OR nome ILIKE $2
+  LIMIT 20
+`;
+        return await pool.query(query, values)
+    }
 }
