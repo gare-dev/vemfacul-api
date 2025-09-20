@@ -258,4 +258,9 @@ export class UserService {
         this.redis.setRedis(`user_${id_user}`, null, 1)
         this.redis.setRedis(`user_profile_${id_user}`, null, 1)
     }
+
+    async getUsersSearchBar(nome: string) {
+
+        return this.repository.getUsersSearchBar(nome)
+    }
 }

@@ -28,6 +28,51 @@ export class QuestoesRepository {
 FROM users_table u
 LEFT JOIN user_to_questao_table q ON q.id_user = u.id_user
 GROUP BY u.id_user, u.nome, u.username
-ORDER BY acertosUser DESC`,[])
+ORDER BY acertosUser DESC`)
+    }
+
+    async selectTop10Users(mode: string) {
+        let query
+        if (mode === "daily") query = `SELECT
+        u.id_user,
+  u.nome,
+  u.foto,
+  COALESCE(SUM((q.iscorret = TRUE)::int), 0) AS acertosUser
+FROM users_table u
+LEFT JOIN user_to_questao_table q 
+  ON q.id_user = u.id_user
+  AND q.created_at::date = CURRENT_DATE  -- só questões de hoje
+GROUP BY u.id_user, u.nome, u.username
+ORDER BY acertosUser DESC LIMIT 10;
+`
+
+        if (mode === 'monthly') query = `SELECT
+        u.id_user,
+  u.nome,
+  u.foto,
+  COALESCE(SUM((q.iscorret = TRUE)::int), 0) AS acertosUser
+FROM users_table u
+LEFT JOIN user_to_questao_table q 
+  ON q.id_user = u.id_user
+  AND DATE_TRUNC('month', q.created_at) = DATE_TRUNC('month', CURRENT_DATE) 
+GROUP BY u.id_user, u.nome, u.username
+ORDER BY acertosUser DESC LIMIT 10;
+`
+
+        if (mode === 'weekly') query = `SELECT
+        u.id_user,
+  u.nome,
+  u.foto,
+  COALESCE(SUM((q.iscorret = TRUE)::int), 0) AS acertosUser
+FROM users_table u
+LEFT JOIN user_to_questao_table q 
+  ON q.id_user = u.id_user
+  AND DATE_TRUNC('week', q.created_at) = DATE_TRUNC('week', CURRENT_DATE)
+GROUP BY u.id_user, u.nome, u.username
+ORDER BY acertosUser DESC LIMIT 10;
+`
+
+        return pool.query(query ?? "")
+
     }
 }
