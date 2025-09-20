@@ -10,10 +10,11 @@ import PersonalEventRoutes from "../routes/PersonalEventRoutes"
 import CourseRoutes from "../routes/CourseRoutes"
 import ReviewRoutes from "../routes/ReviewRoutes"
 import RequestLoggerRoutes from "../routes/RequestLogsRoutes"
+import EssaysRouter from "../routes/EssaysRoutes"
 import { errorHandler } from "../middleware/errorHandler";
-import { requestLogger } from "../middleware/requestLogger";
+
+// import { requestLogger } from "../middleware/requestLogger";
 import { errorLogger } from "../middleware/errorLogger";
-import { JWTClass } from "../../utils/jwt";
 
 const app = express()
 
@@ -43,6 +44,7 @@ app.use(PersonalEventRoutes)
 app.use(CourseRoutes)
 app.use(ReviewRoutes)
 app.use(QuestoesRouter)
+app.use(EssaysRouter)
 app.use(RequestLoggerRoutes)
 
 app.use(errorLogger)

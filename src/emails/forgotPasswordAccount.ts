@@ -6,7 +6,7 @@ const sendForgotPasswordEmail = async (destinatario: string) => {
     const destinatarioLink = cryptr.encrypt(destinatario);
     try {
         await transporter.emails.send({
-            from: 'tccvemfacul@gmail.com',
+            from: 'VemFacul <no-reply@vemfacul.com>',
             to: [destinatario],
             subject: 'Recuperação de Senha',
             html: forgotPasswordHtml(destinatarioLink),
