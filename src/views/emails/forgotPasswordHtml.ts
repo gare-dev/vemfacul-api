@@ -362,7 +362,7 @@ const forgotPasswordHtml = (email: string) => {
                <a
                 style="text-decoration: none; border: 0"
                 ><img
-                 src="https://www.chapaera.org/assets/img/VemFacul.png"
+                 src="https://www.chapera.org/assets/img/VemFacul.png"
                  alt="#"
                  border="0"
                  width="600"

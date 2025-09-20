@@ -2,10 +2,12 @@ import express, { NextFunction, Request, Response } from "express";
 import { QuestionService } from "../services/QuestionService";
 import { QuestoesRepository } from "../repositories/QuestoesRepository";
 import { JWTClass } from "../../utils/jwt";
+import authGuard from "../middleware/authGuard";
 
 const router = express.Router()
 const service = new QuestionService(new QuestoesRepository(), new JWTClass(process.env.SECRET!))
 
+// TODO COLOCAR AUTHGUARD
 router.post("/exercicios/questoes/usuario", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { isCorret, index, year, id_disciplines } = req.body
@@ -24,6 +26,20 @@ router.get("/exercicios/questoes/ranking", async (req: Request, res: Response, n
         res.status(200).json({
             message: "Ranking",
             data: promise
+        })
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+})
+
+router.get("/exercicios/questoes/ranking/:mode", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const mode = req.params.mode
+        const users = await service.getTop10Users(mode)
+
+        res.status(200).json({
+            data: users
         })
     } catch (err) {
         console.log(err)

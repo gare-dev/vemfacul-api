@@ -19,7 +19,7 @@ export class QuestionService {
         if (verifyQuestion.rowCount) {
             const id_questao = verifyQuestion.rows[0].id
             console.log("Está questão já existe: ", id_questao)
-            if((await this.repository.selectQuestoesTouser(id_questao, id_user)).rowCount) {
+            if ((await this.repository.selectQuestoesTouser(id_questao, id_user)).rowCount) {
                 console.log("usuario já fez esta questao");
             }
             await this.repository.insertQuestoesToUser(id_questao, id_user, isCorret)
@@ -34,6 +34,10 @@ export class QuestionService {
 
     async rankinQuestion() {
         const promise = await this.repository.selectRankin();
-             return promise.rows
+        return promise.rows
+    }
+
+    async getTop10Users(mode: string) {
+        return (await this.repository.selectTop10Users(mode)).rows
     }
 }
