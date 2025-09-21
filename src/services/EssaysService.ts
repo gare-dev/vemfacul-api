@@ -26,7 +26,6 @@ export class EssaysService {
     async insertEssay(id_user: string, essay: string, title: string, theme: string) {
         if (!essay) throw new CustomError("Redação não encontrada", 400, "NOTFOUND_ESSAY")
 
-
         const response = await client.chatCompletion({
             provider: "auto",
             model: "Qwen/Qwen2.5-7B-Instruct-1M",
