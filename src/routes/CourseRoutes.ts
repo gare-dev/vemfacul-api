@@ -104,6 +104,7 @@ router.patch("/admin/course/:id_course/approve", adminAuth, async (req: Request,
         const id_course = req.params.id_course
 
         const email = await service.approveCourse(id_course)
+        console.log(email)
         await sendCourseApproveEmail(email.email)
         return res.sendStatus(204)
     } catch (err) {

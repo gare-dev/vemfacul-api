@@ -2,10 +2,10 @@ import pool from "../db/connect"
 
 
 export class EssaysRepository {
-    async insertEssay(id_user: string, essay: string, title: string, theme: string) {
-        const values = [id_user, essay, title, theme]
+    async insertEssay(id_user: string, essay: string, title: string, theme: string, score: number | null, feedback: string) {
+        const values = [id_user, essay, title, theme, score, feedback]
 
-        const query = "INSERT INTO essays_table (id_user, essay, title, theme) VALUES ($1, $2, $3, $4)"
+        const query = "INSERT INTO essays_table (id_user, essay, title, theme, score, notes) VALUES ($1, $2, $3, $4, $5, $6)"
         return await pool.query(query, values)
     }
 
