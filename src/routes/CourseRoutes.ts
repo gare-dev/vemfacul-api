@@ -8,6 +8,7 @@ import { CreateCourseAddressType, CreateCourseAdminType, CreateCourseInfoType, C
 import adminAuth from "../middleware/adminAuth"
 import authGuard from "../middleware/authGuard"
 import { UserRepository } from "../repositories/UserRepository"
+import sendCourseApproveEmail from "../emails/courseApprove"
 
 const router = express.Router()
 const service = new CourseService(new CourseRepository(), new CourseInfoRepository(), new CourseAddressRepository(), new UserRepository())
@@ -102,8 +103,9 @@ router.patch("/admin/course/:id_course/approve", adminAuth, async (req: Request,
     try {
         const id_course = req.params.id_course
 
-        await service.approveCourse(id_course)
-
+        const email = await service.approveCourse(id_course)
+        console.log(email)
+        await sendCourseApproveEmail(email.email)
         return res.sendStatus(204)
     } catch (err) {
         throw err
