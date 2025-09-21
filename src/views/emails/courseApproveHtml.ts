@@ -1,6 +1,6 @@
-const email_link = process.env.CREATE_EMAIL_URL
+const link = process.env.DOMAIN ?? "http://localhost:3000"
 
-const createAccountHtml = (link: string) => {
+const courseApproveHtml = () => {
    return `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
@@ -606,7 +606,7 @@ const createAccountHtml = (link: string) => {
                   style="display: block; background-color: #001ecb"
                  >
                   <a
-                   href="${email_link}${link}"
+                   href="${link}"
                    style="
                     color: #ffffff;
                     display: block;
@@ -619,7 +619,7 @@ const createAccountHtml = (link: string) => {
                     white-space: nowrap;
                     padding: 12px 30px;
                    "
-                   >Confirmar Cadastro</a
+                   >Fazer Login</a
                   >
                  </td>
                 </tr>
@@ -700,4 +700,4 @@ const createAccountHtml = (link: string) => {
 </html>
 `
 }
-export default createAccountHtml
+export default courseApproveHtml

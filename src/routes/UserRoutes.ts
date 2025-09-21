@@ -275,4 +275,16 @@ router.patch("/admin/users/role", adminAuth, async (req: Request, res: Response,
     }
 })
 
+router.get("/page/search/:nome", adminAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const nome = req.params.nome
+        const users = await service.getUsersSearchBar(nome)
+
+        return res.status(200).json({
+            data: users.rows
+        })
+    } catch (err) {
+        next(err)
+    }
+})
 export default router
