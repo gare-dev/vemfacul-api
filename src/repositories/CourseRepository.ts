@@ -43,6 +43,7 @@ export class CourseRepository {
       pool.query(query, values),
       pool.query(query2, values)
     ]);
+    console.log(res2)
     return res2.rows[0]
   }
 
