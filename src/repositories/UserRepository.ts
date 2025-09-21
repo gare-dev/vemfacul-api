@@ -83,6 +83,7 @@ SELECT
     u.username,
     u.foto,
     u.header,
+    u.verified_account,
     u.descricao,
     u.posts_number,
     u.vestibulares,
