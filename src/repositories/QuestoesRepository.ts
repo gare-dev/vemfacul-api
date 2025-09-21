@@ -28,6 +28,7 @@ export class QuestoesRepository {
 FROM users_table u
 LEFT JOIN user_to_questao_table q ON q.id_user = u.id_user
 GROUP BY u.id_user, u.nome, u.username
-ORDER BY acertosUser DESC`,[])
+ORDER BY acertosUser DESC
+LIMIT 5`,[])
     }
 }
