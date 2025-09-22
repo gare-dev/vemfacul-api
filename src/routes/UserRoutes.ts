@@ -288,4 +288,17 @@ router.get("/page/search/:nome", authGuard, async (req: Request, res: Response, 
     }
 })
 
+router.get("/user/username/:username", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const username = req.params.username
+        const users = await service.getUsernameList(username)
+
+        return res.status(200).json({
+            data: users.rows[0]
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
 export default router
