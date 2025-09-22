@@ -13,11 +13,9 @@ router.post("/user/essay", authGuard, async (req: Request, res: Response, next: 
         const { essay, theme, title } = req.body
         const id_user = req.user.id
 
-        const response = await service.insertEssay(id_user, essay, title, theme)
+        await service.insertEssay(id_user, essay, title, theme)
 
-        return res.status(201).json({
-            data: [{ ...response, essay, theme, title, }]
-        })
+        return res.sendStatus(201)
     } catch (err) {
         next(err)
     }

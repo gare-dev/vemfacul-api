@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --env-file .env src/index.ts"
+    "dev": "ts-node-dev --respawn --transpile-only --env-file .env src/index.ts",
+    "worker": "ts-node-dev --env-file .env src/workers/essayWorker.ts"
   },
   "keywords": [],
   "author": "",
@@ -13,11 +14,13 @@
     "@huggingface/inference": "^4.8.0",
     "@supabase/supabase-js": "^2.49.4",
     "@types/cookie-parser": "^1.4.9",
+    "bullmq": "^5.58.7",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cryptr": "^6.3.0",
     "express": "^4.21.2",
     "handlebars": "^4.7.8",
+    "ioredis": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.10.1",
     "nodemon": "^3.1.10",
