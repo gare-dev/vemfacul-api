@@ -126,7 +126,7 @@ export class UserService {
         if (user.nivel && !["Aluno EM", "Universitário", "Vestibulando", "Professor"].includes(user.nivel)) throw new CustomError("Nível inválido", 400, "LEVEL_INVALID")
         if (user.escola && user.escola.length > 30) throw new CustomError("Escola deve ser menor que 30 caracteres.", 400, "SCHOOLLENGTH_INVALID")
         console.log(user.ano)
-        if (user.ano && !["1º", "2º", "3º"].includes(user.ano)) throw new CustomError("Ano inválido.", 400, "GRADE_INVALID")
+        if (user.ano && !["1°", "2º", "3º"].includes(user.ano)) throw new CustomError("Ano inválido.", 400, "GRADE_INVALID")
         const validVestibulares = ["FUVEST", "ITA", "ENEM", "VUNESP", "UNICAMP", "Outros..."];
         // TODO transforme isso numa funcao pelo amor de deus
         if (
