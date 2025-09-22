@@ -36,6 +36,7 @@ async function authGuard(req: Request, res: Response, next: NextFunction) {
         });
 
     } catch (error) {
+        console.log(error)
         return res.status(401).json({
             message: "Token de autenticação inválido.",
             code: "INVALID_TOKEN"
