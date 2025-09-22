@@ -169,4 +169,11 @@ WHERE u.username ILIKE $1;
 `;
         return await pool.query(query, values)
     }
+
+    async getUsernameList(username: string) {
+        const values = [username]
+
+        const query = "SELECT COUNT(username) FROM users_table WHERE username = $1"
+        return await pool.query(query, values)
+    }
 }

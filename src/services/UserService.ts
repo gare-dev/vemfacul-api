@@ -263,4 +263,8 @@ export class UserService {
 
         return this.repository.getUsersSearchBar(nome)
     }
+
+    async getUsernameList(username: string) {
+        return this.repository.getUsernameList(username)
+    }
 }
