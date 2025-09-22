@@ -7,7 +7,6 @@ import authGuard from "../middleware/authGuard";
 const router = express.Router()
 const service = new QuestionService(new QuestoesRepository(), new JWTClass(process.env.SECRET!))
 
-// TODO COLOCAR AUTHGUARD
 router.post("/exercicios/questoes/usuario", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { isCorret, index, year, id_disciplines } = req.body
