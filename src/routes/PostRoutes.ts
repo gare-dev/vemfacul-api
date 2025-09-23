@@ -1,10 +1,12 @@
 import express, { NextFunction, Request, Response } from "express"
 import { PostService } from "../services/PostService"
 import { PostsRepository } from "../repositories/PostRepository"
+import { NotificationsService } from "../services/NotificationsService"
+import { NotificationsRepository } from "../repositories/NotificationsRepository"
 import authGuard from "../middleware/authGuard"
 
 const router = express.Router()
-const service = new PostService(new PostsRepository())
+const service = new PostService(new PostsRepository(), new NotificationsService(new NotificationsRepository()))
 
 router.post("/user/post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -78,7 +80,8 @@ router.get("/user/post/:post/like", authGuard, async (req: Request, res: Respons
 
 router.get("/post", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const posts = await service.selectAllPosts()
+        const id_user = +req.user.id
+        const posts = await service.selectAllPosts(id_user)
 
         return res.status(200).json({
             data: posts.rows
@@ -110,8 +113,7 @@ router.post("/coment", authGuard, async (req: Request, res: Response, next: Next
         const id_user = +req.user.id
         const { content, postagem_pai } = req.body
 
-        await service.createComment(content, postagem_pai, id_user)
-
+        const promise = await service.createComment(content, postagem_pai, id_user)
         return res.sendStatus(201)
     } catch (err) {
         next(err)
