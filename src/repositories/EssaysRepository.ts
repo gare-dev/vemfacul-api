@@ -15,4 +15,11 @@ export class EssaysRepository {
         const query = "SELECT * FROM essays_table WHERE id_user = $1"
         return await pool.query(query, values)
     }
+
+    async essayCountByMonth(id_user: string) {
+        const values = [id_user]
+
+        const query = "SELECT COUNT(*) FROM essays_table WHERE id_user = $1 AND DATE_TRUNC('month', created_at) = DATE_TRUNC('month', CURRENT_DATE) "
+        return await pool.query(query, values)
+    }
 }
