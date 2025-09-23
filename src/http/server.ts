@@ -5,6 +5,7 @@ import UserRoutes from "../routes/UserRoutes"
 import QuestoesRouter from "../routes/QuestoesRouter"
 import EventRoutes from "../routes/EventRoutes"
 import PostRoutes from "../routes/PostRoutes"
+import NotificationsRouter from "../routes/NotificationsRouter"
 import Adminroutes from "../routes/AdminRoutes"
 import PersonalEventRoutes from "../routes/PersonalEventRoutes"
 import CourseRoutes from "../routes/CourseRoutes"
@@ -39,6 +40,7 @@ app.use(cookieParser())
 app.use(UserRoutes)
 app.use(EventRoutes)
 app.use(PostRoutes)
+app.use(NotificationsRouter)
 app.use(Adminroutes)
 app.use(PersonalEventRoutes)
 app.use(CourseRoutes)
@@ -46,7 +48,6 @@ app.use(ReviewRoutes)
 app.use(QuestoesRouter)
 app.use(EssaysRouter)
 app.use(RequestLoggerRoutes)
-
 app.use(errorLogger)
 app.use(errorHandler)
 

@@ -45,7 +45,16 @@ ORDER BY
     async likePost(id_post: string, id_user: string) {
         const values = [id_post, id_user]
 
-        const query = "INSERT INTO postagensLike_table (id_postagem, id_user)  VALUES ($1, $2) ON CONFLICT DO NOTHING"
+        const query = `WITH inserted AS (
+   INSERT INTO postagensLike_table (id_postagem, id_user)
+   VALUES ($1, $2)
+   RETURNING id_postagem
+ )
+SELECT i.id_postagem,
+       u.id_user AS id_destinatario
+FROM inserted i
+JOIN postagens_table p ON p.id_postagem = i.id_postagem 
+JOIN users_table u ON u.id_user = p.id_user;`
         return pool.query(query, values)
     }
 
@@ -75,7 +84,8 @@ ORDER BY
         return await pool.query(query, values)
     }
 
-    async selectAllPosts() {
+    async selectAllPosts(id_user: number) {
+        const values = [id_user]
         const query = `
             select
   p.id_postagem,
@@ -94,6 +104,9 @@ ORDER BY
       coments = true
       and postagem_pai = p.id_postagem
   ) as total_comments,
+   (
+     SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $1
+    ) as alredyLiked,
   (
     select
       COUNT(*)
@@ -109,13 +122,22 @@ where
   coments = false
 order by
   p.created_at desc;`
-        return await pool.query(query)
+        return await pool.query(query, values)
     }
 
     async createComment(content: string, postagem_pai: number, id_user: number) {
         const values = [content, postagem_pai, id_user]
 
-        const query = "INSERT INTO postagens_table (coments, content, postagem_pai, id_user) VALUES (true, $1, $2, $3)"
+        const query = `WITH inserted AS (
+  INSERT INTO postagens_table (coments, content, postagem_pai, id_user)
+  VALUES (true, $1, $2, $3)
+  RETURNING id_postagem, postagem_pai
+)
+SELECT i.id_postagem,
+       u.id_user AS id_destinatario
+FROM inserted i
+join postagens_table p on p.id_postagem = i.postagem_pai
+JOIN users_table u ON u.id_user = p.id_user;`
         return await pool.query(query, values)
 
     }

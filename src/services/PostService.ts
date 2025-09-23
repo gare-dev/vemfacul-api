@@ -1,9 +1,8 @@
 import { CustomError } from "../errors/HttpError";
 import { PostsRepository } from "../repositories/PostRepository";
-
-
+import { NotificationsService } from "./NotificationsService";
 export class PostService {
-    constructor(private repository: PostsRepository) { }
+    constructor(private repository: PostsRepository, private NotificationService: NotificationsService) { }
 
     async createPost(id_user: string, content: string) {
         if (!content) throw new CustomError("Post não pode ser vazio!", 400, "EMPTY_POST")
@@ -25,8 +24,12 @@ export class PostService {
 
         const post = await this.repository.likePost(id_post, id_user)
 
-        if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
+        const id_destinatario = +post.rows[0].id_destinatario
+        console.log(id_destinatario)
+        await this.NotificationService.createNotifications(Number(id_user), id_destinatario, Number(id_post), "Curtida");
 
+        if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
+        
         return post
     }
 
@@ -47,9 +50,8 @@ export class PostService {
         return likes.rows
     }
 
-    async selectAllPosts() {
-
-        const posts = await this.repository.selectAllPosts()
+    async selectAllPosts(id_user: number) {
+        const posts = await this.repository.selectAllPosts(id_user)
 
         return posts
     }
@@ -68,8 +70,10 @@ export class PostService {
     async createComment(content: string, postagem_pai: number, id_user: number) {
         if (!content) throw new CustomError("Conteúdo do post é necessário para fazer a postagem.", 400, "CONTENT_MISSING")
         if (!postagem_pai) throw new CustomError("ID Father é necessário para fazer o post", 400, "IDFATHER_MISSING")
-
-        return await this.repository.createComment(content, postagem_pai, id_user)
+        const comment = await this.repository.createComment(content, postagem_pai, id_user)
+        const id_destinatario = comment.rows[0].id_destinatario
+        console.log(id_destinatario, id_user, postagem_pai)
+        return await this.NotificationService.createNotifications(id_user, id_destinatario, postagem_pai, "Comentário")
     }
 
     async selectComment(id_pai: string) {

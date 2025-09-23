@@ -44,7 +44,7 @@ LEFT JOIN user_to_questao_table q
   AND q.created_at::date = CURRENT_DATE  
 WHERE u.nivel <> 'Cursinho'
 GROUP BY u.id_user, u.nome, u.username
-ORDER BY acertosUser DESC LIMIT 10;
+ORDER BY acertosUser DESC LIMIT 5;
 `
 
     if (mode === 'monthly') query = `SELECT
@@ -58,7 +58,7 @@ LEFT JOIN user_to_questao_table q
   AND DATE_TRUNC('month', q.created_at) = DATE_TRUNC('month', CURRENT_DATE) 
 WHERE u.nivel <> 'Cursinho'
 GROUP BY u.id_user, u.nome, u.username
-ORDER BY acertosUser DESC LIMIT 10;
+ORDER BY acertosUser DESC LIMIT 5;
 `
 
     if (mode === 'weekly') query = `SELECT
@@ -72,7 +72,7 @@ LEFT JOIN user_to_questao_table q
   AND DATE_TRUNC('week', q.created_at) = DATE_TRUNC('week', CURRENT_DATE)
 WHERE u.nivel <> 'Cursinho'
 GROUP BY u.id_user, u.nome, u.username
-ORDER BY acertosUser DESC LIMIT 10;
+ORDER BY acertosUser DESC LIMIT 5;
 `
 
     return pool.query(query ?? "")
