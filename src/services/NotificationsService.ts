@@ -19,7 +19,6 @@ export class NotificationsService {
             case "redacao": { mode = "redacao"; break; }
             default: { mode = "postagem"; break; }
         }
-        console.log(mode)
         return await this.repository.selectNotification(mode, id_user)
     }
 } 
