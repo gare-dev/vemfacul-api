@@ -29,6 +29,7 @@ export class PostService {
         
         const id_destinatario = +post.rows[0].id_destinatario
         console.log(id_destinatario)
+
         await this.NotificationService.createNotifications(Number(id_user), id_destinatario, Number(id_post), "Curtida");
 
         return post

@@ -1,11 +1,13 @@
 import pool from "../db/connect";
 
 export class NotificationsRepository {
-  async insertNotification(id_user: number, id_actor: number, id_post: number, type: string) {
-    const values = [id_user, id_actor, id_post, type]
+  
+  async insertNotification(id_destinatario: number, id_actor: number, id_post: number, type: string) {
+    const values = [id_destinatario, id_actor, id_post, type]
     const query = "INSERT INTO notifications_table (id_user, id_actor, id_postagem, type) VALUES ($1, $2, $3, $4);"
     return await pool.query(query, values);
   }
+
   async selectNotification(mode: string, id_user: number) {
     const values = [id_user]
     let query
