@@ -13,7 +13,9 @@
   "dependencies": {
     "@huggingface/inference": "^4.8.0",
     "@supabase/supabase-js": "^2.49.4",
+    "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
+    "bcrypt": "^6.0.0",
     "bullmq": "^5.58.7",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

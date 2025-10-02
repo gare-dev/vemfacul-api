@@ -7,6 +7,7 @@ import sendForgotPasswordEmail from "../emails/forgotPasswordAccount";
 import cryptr from "../config/cryptr";
 import uploadPhoto, { MulterFile } from "../../utils/uploadPhoto"
 import uploadToSupabase from "../../utils/uploadSupabasePhoto"
+import bcrypt from "bcrypt"
 
 export class UserService {
     constructor(
@@ -20,11 +21,12 @@ export class UserService {
         if (!user.password) throw new CustomError("Senha é necessário para o cadastro.", 400, "PWD_MISSING")
 
         try {
-            const response = await this.repository.create(user)
+            const response = await this.repository.create({ ...user, password: await bcrypt.hash(user.password, 12) })
 
             if (response.rowCount === 0) {
                 throw new CustomError("Perfil não criado, tente novamente mais tarde.", 400, "UNKNOWN_ERROR")
             }
+
             if (response.rowCount! > 0) {
                 console.log("✅ Usuário criado com sucesso.")
             }
@@ -45,6 +47,10 @@ export class UserService {
 
         if (response.rowCount === 0) {
             throw new CustomError("Email ou senha incorretos.", 400, "INVALID_EMAIL_OR_PASSWORD")
+        }
+
+        if (!user || !(await bcrypt.compare(user.password, response.rows[0].senha))) {
+            throw new CustomError("Incorrect email or password.", 401, "INCORRECT_LOGIN")
         }
 
         const { id_user, nome, username, role, id_cursinho } = response.rows[0];
@@ -267,4 +273,9 @@ export class UserService {
     async getUsernameList(username: string) {
         return this.repository.getUsernameList(username)
     }
+
+    async criptographAllPasswords() {
+        return this.repository.criptographAllPasswords()
+    }
+
 }
