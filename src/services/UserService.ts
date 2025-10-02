@@ -274,8 +274,5 @@ export class UserService {
         return this.repository.getUsernameList(username)
     }
 
-    async criptographAllPasswords() {
-        return this.repository.criptographAllPasswords()
-    }
 
 }

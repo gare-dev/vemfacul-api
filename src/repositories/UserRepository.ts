@@ -177,15 +177,4 @@ WHERE u.username ILIKE $1;
         const query = "SELECT COUNT(username) FROM users_table WHERE username = $1"
         return await pool.query(query, values)
     }
-
-    async criptographAllPasswords() {
-        const querySelect = "SELECT id_user, senha FROM users_table"
-        const users = await pool.query(querySelect)
-
-        for (const user of users.rows) {
-            const hashedPassword = await hashPassword(user.senha)
-            const queryUpdate = "UPDATE users_table SET senha = $1 WHERE id_user = $2"
-            await pool.query(queryUpdate, [hashedPassword, user.id_user])
-        }
-    }
 }

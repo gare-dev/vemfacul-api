@@ -29,7 +29,7 @@ export class PostService {
         await this.NotificationService.createNotifications(Number(id_user), id_destinatario, Number(id_post), "Curtida");
 
         if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
-        
+
         return post
     }
 
@@ -84,5 +84,16 @@ export class PostService {
         if (comment.rowCount && comment.rowCount === 0) throw new CustomError("Nenhum comentário encontrado", 400, "COMMENT_NOTFOUND")
 
         return comment.rows
+    }
+
+    async deletePost(id_post: string, id_user: string) {
+        if (!id_post) throw new CustomError("ID do post é necessário para deletar um post.", 400, "MISSING_IDPOST")
+        if (!id_user) throw new CustomError("ID do usuário é necessário para deletar um post.", 400, "MISSING_IDUSER")
+
+        const result = await this.repository.deletePost(id_post, id_user)
+
+        if (result.rowCount === 0) throw new CustomError("Post não encontrado ou você não tem permissão para deletar esse post.", 404, "POST_NOTFOUND")
+
+        return result
     }
 }
