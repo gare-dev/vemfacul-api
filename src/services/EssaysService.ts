@@ -4,8 +4,6 @@ import { CustomError } from "../errors/HttpError";
 import { EssaysRepository } from "../repositories/EssaysRepository";
 import { essayQueue } from "../queues/essayQueue";
 
-
-
 export class EssaysService {
     constructor(
         private repository: EssaysRepository,

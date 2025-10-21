@@ -12,10 +12,12 @@ import CourseRoutes from "../routes/CourseRoutes"
 import ReviewRoutes from "../routes/ReviewRoutes"
 import RequestLoggerRoutes from "../routes/RequestLogsRoutes"
 import EssaysRouter from "../routes/EssaysRoutes"
+import ReportedPostsRoutes from "../routes/ReportedPostsRoutes"
 import { errorHandler } from "../middleware/errorHandler";
 
 // import { requestLogger } from "../middleware/requestLogger";
 import { errorLogger } from "../middleware/errorLogger";
+import rateLimitMiddleware from "../middleware/rateLimitMiddleware";
 
 const app = express()
 
@@ -36,9 +38,11 @@ app.use(express.json())
 app.use(cookieParser())
 
 // app.use(requestLogger)
+app.use(rateLimitMiddleware)
 
 app.use(UserRoutes)
 app.use(EventRoutes)
+app.use(ReportedPostsRoutes)
 app.use(PostRoutes)
 app.use(NotificationsRouter)
 app.use(Adminroutes)
@@ -48,6 +52,7 @@ app.use(ReviewRoutes)
 app.use(QuestoesRouter)
 app.use(EssaysRouter)
 app.use(RequestLoggerRoutes)
+
 app.use(errorLogger)
 app.use(errorHandler)
 

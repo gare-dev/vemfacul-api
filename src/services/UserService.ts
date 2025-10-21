@@ -61,8 +61,6 @@ export class UserService {
             role: role,
         }
 
-        console.log(id_cursinho)
-
         if (id_cursinho !== "NULL") {
             payload.id_cursinho = id_cursinho
         }
@@ -114,8 +112,9 @@ export class UserService {
 
         try {
             const email = cryptr.decrypt(encryptedEmail)
+            const encrypted_password = await bcrypt.hash(password, 12)
 
-            return console.log(await this.repository.resetPassword(password, email))
+            return console.log(await this.repository.resetPassword(encrypted_password, email))
         } catch (err: unknown) {
             if ((err as { code: string })?.code === "ERR_CRYPTO_INVALID_IV") {
                 throw new CustomError("Não foi possível resetar a senha.", 400, "RESET_ERROR")
