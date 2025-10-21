@@ -211,4 +211,11 @@ WHERE
         return await pool.query(query, values)
     }
 
+    async deletePost(id_post: string, id_user: string) {
+        const values = [id_post, id_user]
+
+        const query = `DELETE FROM postagens_table WHERE id_postagem = $1 AND id_user = $2`
+        return await pool.query(query, values)
+    }
+
 }

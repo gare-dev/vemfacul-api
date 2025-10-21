@@ -27,7 +27,16 @@ export class NotificationsRepository {
                         notifications_table n
                         join users_table u 
                         on u.id_user = n.id_user
-                        where type like '%Redação' AND u.id_user = $1`
+                        where type like '%Redação' AND u.id_user = $1
+                        order by n.created_at DESC`
+    if (mode == "denuncias") query = ` select
+                        type as tipo,
+                        content
+                        from notifications_table n
+                        join users_table u 
+                        on u.id_user = n.id_user
+                        where type = 'Denuncias' AND u.id_user = $1
+                        order by n.created_at DESC`
 
     const query2 = "UPDATE notifications_table SET read = TRUE WHERE id_user = $1"
     const [res1, res2] = await Promise.all([

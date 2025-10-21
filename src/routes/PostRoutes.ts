@@ -136,4 +136,17 @@ router.get("/post/coment/:id", authGuard, async (req: Request, res: Response, ne
     }
 })
 
+router.delete("/user/post/:id_postagem", authGuard, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id_post = req.params.id_postagem
+        const id_user = req.user.id
+
+        await service.deletePost(id_post, id_user)
+
+        return res.sendStatus(204)
+    } catch (err) {
+        next(err)
+    }
+})
+
 export default router
