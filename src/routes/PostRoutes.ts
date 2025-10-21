@@ -113,7 +113,7 @@ router.post("/coment", authGuard, async (req: Request, res: Response, next: Next
         const id_user = +req.user.id
         const { content, postagem_pai } = req.body
 
-        const promise = await service.createComment(content, postagem_pai, id_user)
+        await service.createComment(content, postagem_pai, id_user)
         return res.sendStatus(201)
     } catch (err) {
         next(err)
@@ -124,8 +124,8 @@ router.post("/coment", authGuard, async (req: Request, res: Response, next: Next
 router.get("/post/coment/:id", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id_pai = req.params.id
-
-        const coments = await service.selectComment(id_pai)
+        const id_user = +req.user.id
+        const coments = await service.selectComment(id_pai, id_user)
 
         return res.status(200).json({
             data: coments

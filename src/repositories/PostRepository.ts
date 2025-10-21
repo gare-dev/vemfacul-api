@@ -142,8 +142,8 @@ JOIN users_table u ON u.id_user = p.id_user;`
 
     }
 
-    async selectComments(id_pai: string) {
-        const values = [id_pai]
+    async selectComments(id_pai: string, id_user: number) {
+        const values = [id_pai, id_user]
 
         const query = `SELECT
     p.id_postagem,
@@ -162,7 +162,10 @@ JOIN users_table u ON u.id_user = p.id_user;`
         SELECT COUNT(*) 
         FROM postagenslike_table l 
         WHERE l.id_postagem = p.id_postagem
-    ) AS total_likes
+        ) AS total_likes,
+        (
+     SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $2
+    ) as alredyLiked
 FROM
     postagens_table p
 JOIN
