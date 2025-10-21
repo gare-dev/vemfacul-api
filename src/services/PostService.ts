@@ -24,8 +24,12 @@ export class PostService {
 
         const post = await this.repository.likePost(id_post, id_user)
 
+
+        if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
+        
         const id_destinatario = +post.rows[0].id_destinatario
         console.log(id_destinatario)
+
         await this.NotificationService.createNotifications(Number(id_user), id_destinatario, Number(id_post), "Curtida");
 
         if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
@@ -76,10 +80,10 @@ export class PostService {
         return await this.NotificationService.createNotifications(id_user, id_destinatario, postagem_pai, "Comentário")
     }
 
-    async selectComment(id_pai: string) {
+    async selectComment(id_pai: string, id_user: number) {
         if (!id_pai) throw new CustomError("ID Pai é necessário para o selectComment", 400, "IDPAI_MISSING")
 
-        const comment = await this.repository.selectComments(id_pai)
+        const comment = await this.repository.selectComments(id_pai, id_user)
 
         if (comment.rowCount && comment.rowCount === 0) throw new CustomError("Nenhum comentário encontrado", 400, "COMMENT_NOTFOUND")
 
