@@ -192,7 +192,7 @@ router.get("/user/validate", authGuard, async (req: Request, res: Response, next
     try {
         const token = req.cookies.token;
 
-        const validated_user = await service.validateProfile(token!)
+        const validated_user = await service.validateProfile(token)
 
         return res.status(200).json({
             code: "PROFILE_VALIDATED",
