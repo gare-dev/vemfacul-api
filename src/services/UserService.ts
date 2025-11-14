@@ -50,7 +50,7 @@ export class UserService {
         }
 
         if (!user || !(await bcrypt.compare(user.password, response.rows[0].senha))) {
-            throw new CustomError("Incorrect email or password.", 401, "INCORRECT_LOGIN")
+            throw new CustomError("Email ou senha incorretos.", 400, "INVALID_EMAIL_OR_PASSWORD")
         }
 
         const { id_user, nome, username, role, id_cursinho } = response.rows[0];
@@ -60,8 +60,6 @@ export class UserService {
             email: user.email,
             role: role,
         }
-
-        console.log(id_cursinho)
 
         if (id_cursinho !== "NULL") {
             payload.id_cursinho = id_cursinho
@@ -83,7 +81,7 @@ export class UserService {
         const response = await this.repository.profileInfo(decoded_token?.id!)
 
         await this.redis.setRedis(`user_profile_${decoded_token?.id}`, response.rows[0], 2 * 24 * 60 * 60)
-        console.log("⌛ Cache set for user profile")
+        // console.log("⌛ Cache set for user profile")
 
         return response.rows[0]
     }
@@ -114,8 +112,9 @@ export class UserService {
 
         try {
             const email = cryptr.decrypt(encryptedEmail)
+            const encrypted_password = await bcrypt.hash(password, 12)
 
-            return console.log(await this.repository.resetPassword(password, email))
+            return console.log(await this.repository.resetPassword(encrypted_password, email))
         } catch (err: unknown) {
             if ((err as { code: string })?.code === "ERR_CRYPTO_INVALID_IV") {
                 throw new CustomError("Não foi possível resetar a senha.", 400, "RESET_ERROR")
@@ -274,8 +273,5 @@ export class UserService {
         return this.repository.getUsernameList(username)
     }
 
-    async criptographAllPasswords() {
-        return this.repository.criptographAllPasswords()
-    }
 
 }

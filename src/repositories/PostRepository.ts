@@ -117,9 +117,13 @@ JOIN users_table u ON u.id_user = p.id_user;`
   ) as total_likes
 from
   postagens_table p
+  left join reported_posts_table r on r.id_post = p.id_postagem
   join users_table u on p.id_user = u.id_user
 where
-  coments = false
+  coments = false AND (
+        r.id_post IS NULL               
+        OR r.status != 'REMOVED'        
+      )
 order by
   p.created_at desc;`
         return await pool.query(query, values)
@@ -142,8 +146,8 @@ JOIN users_table u ON u.id_user = p.id_user;`
 
     }
 
-    async selectComments(id_pai: string) {
-        const values = [id_pai]
+    async selectComments(id_pai: string, id_user: number) {
+        const values = [id_pai, id_user]
 
         const query = `SELECT
     p.id_postagem,
@@ -162,7 +166,10 @@ JOIN users_table u ON u.id_user = p.id_user;`
         SELECT COUNT(*) 
         FROM postagenslike_table l 
         WHERE l.id_postagem = p.id_postagem
-    ) AS total_likes
+        ) AS total_likes,
+        (
+     SELECT 1 from postagenslike_table WHERE id_postagem = p.id_postagem AND id_user = $2
+    ) as alredyLiked
 FROM
     postagens_table p
 JOIN
@@ -205,6 +212,13 @@ WHERE
     p.id_postagem = $2
 ;  
 `
+        return await pool.query(query, values)
+    }
+
+    async deletePost(id_post: string, id_user: string) {
+        const values = [id_post, id_user]
+
+        const query = `DELETE FROM postagens_table WHERE id_postagem = $1 AND id_user = $2`
         return await pool.query(query, values)
     }
 

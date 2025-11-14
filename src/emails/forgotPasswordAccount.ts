@@ -9,7 +9,7 @@ const sendForgotPasswordEmail = async (destinatario: string) => {
             from: 'VemFacul <no-reply@vemfacul.com>',
             to: [destinatario],
             subject: 'Recuperação de Senha',
-            html: forgotPasswordHtml(destinatarioLink),
+            html: forgotPasswordHtml(encodeURIComponent(destinatarioLink)),
         });
         // const mailOptions = {
         //     from: "tccvemfacul@gmail.com",

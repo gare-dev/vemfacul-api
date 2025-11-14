@@ -50,7 +50,6 @@ export class UserRepository {
 
         switch (values[2]) {
             case "Aluno EM":
-                console.log(user.email)
                 values.push(user.escola, user.ano, user.vestibulares, user.email, user.username)
                 return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, escola = $4, ano = $5, vestibulares = $6, username = $8 WHERE email = $7 RETURNING id_user, nome, username", values)
             case "Universitário":
@@ -178,14 +177,5 @@ WHERE u.username ILIKE $1;
         return await pool.query(query, values)
     }
 
-    async criptographAllPasswords() {
-        const querySelect = "SELECT id_user, senha FROM users_table"
-        const users = await pool.query(querySelect)
-
-        for (const user of users.rows) {
-            const hashedPassword = await hashPassword(user.senha)
-            const queryUpdate = "UPDATE users_table SET senha = $1 WHERE id_user = $2"
-            await pool.query(queryUpdate, [hashedPassword, user.id_user])
-        }
-    }
+    
 }

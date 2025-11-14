@@ -36,7 +36,6 @@ router.get("/user/event", authGuard, async (req: Request, res: Response, next: N
 router.post("/user/local/event", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data: CreatePersonalLocalEventType = req.body
-        console.log(data)
 
         await service.insertPersonalLocalEvent({ ...data, id_user: req.user.id })
 

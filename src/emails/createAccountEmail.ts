@@ -11,7 +11,6 @@ const sendConfirmationEmail = async (destinatario: string, confirmationLink: str
             subject: 'Confirme sua conta',
             html: createAccountHtml(confirmationLink),
         });
-        console.log(data)
         console.log('✅ Email de confirmação de conta enviado com sucesso!')
 
     } catch (error) {

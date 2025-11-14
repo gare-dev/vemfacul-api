@@ -24,12 +24,15 @@ export class PostService {
 
         const post = await this.repository.likePost(id_post, id_user)
 
+
+        if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
+
         const id_destinatario = +post.rows[0].id_destinatario
-        console.log(id_destinatario)
+
         await this.NotificationService.createNotifications(Number(id_user), id_destinatario, Number(id_post), "Curtida");
 
         if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
-        
+
         return post
     }
 
@@ -72,17 +75,27 @@ export class PostService {
         if (!postagem_pai) throw new CustomError("ID Father é necessário para fazer o post", 400, "IDFATHER_MISSING")
         const comment = await this.repository.createComment(content, postagem_pai, id_user)
         const id_destinatario = comment.rows[0].id_destinatario
-        console.log(id_destinatario, id_user, postagem_pai)
         return await this.NotificationService.createNotifications(id_user, id_destinatario, postagem_pai, "Comentário")
     }
 
-    async selectComment(id_pai: string) {
+    async selectComment(id_pai: string, id_user: number) {
         if (!id_pai) throw new CustomError("ID Pai é necessário para o selectComment", 400, "IDPAI_MISSING")
 
-        const comment = await this.repository.selectComments(id_pai)
+        const comment = await this.repository.selectComments(id_pai, id_user)
 
         if (comment.rowCount && comment.rowCount === 0) throw new CustomError("Nenhum comentário encontrado", 400, "COMMENT_NOTFOUND")
 
         return comment.rows
+    }
+
+    async deletePost(id_post: string, id_user: string) {
+        if (!id_post) throw new CustomError("ID do post é necessário para deletar um post.", 400, "MISSING_IDPOST")
+        if (!id_user) throw new CustomError("ID do usuário é necessário para deletar um post.", 400, "MISSING_IDUSER")
+
+        const result = await this.repository.deletePost(id_post, id_user)
+
+        if (result.rowCount === 0) throw new CustomError("Post não encontrado ou você não tem permissão para deletar esse post.", 404, "POST_NOTFOUND")
+
+        return result
     }
 }
