@@ -10,7 +10,6 @@ const sendCourseApproveEmail = async (destinatario: string) => {
             subject: 'Seu cursinho foi aprovado!',
             html: courseApproveHtml(),
         });
-        console.log(data)
         console.log('✅ Email de confirmação de criação de cursinho enviado com sucesso!')
     } catch (error) {
         console.log("❌ Um erro foi encontrado ao enviar o email de criação de cursinho." + error)

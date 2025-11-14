@@ -27,7 +27,6 @@ export class QuestionService {
         else {
             const newQuestion = await this.repository.insertQuestoes(index, id_diciplina, year)
             const id_questao = newQuestion.rows[0].id
-            console.log("Criando a questao: id_", id_questao)
             await this.repository.insertQuestoesToUser(id_questao, id_user, isCorret)
         }
     }

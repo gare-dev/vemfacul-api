@@ -50,7 +50,6 @@ export class UserRepository {
 
         switch (values[2]) {
             case "Aluno EM":
-                console.log(user.email)
                 values.push(user.escola, user.ano, user.vestibulares, user.email, user.username)
                 return await pool.query("UPDATE users_table SET nome = $1, estado = $2, nivel = $3, escola = $4, ano = $5, vestibulares = $6, username = $8 WHERE email = $7 RETURNING id_user, nome, username", values)
             case "Universitário":

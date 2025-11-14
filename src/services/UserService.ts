@@ -50,7 +50,7 @@ export class UserService {
         }
 
         if (!user || !(await bcrypt.compare(user.password, response.rows[0].senha))) {
-            throw new CustomError("Incorrect email or password.", 401, "INCORRECT_LOGIN")
+            throw new CustomError("Email ou senha incorretos.", 400, "INVALID_EMAIL_OR_PASSWORD")
         }
 
         const { id_user, nome, username, role, id_cursinho } = response.rows[0];
@@ -81,7 +81,7 @@ export class UserService {
         const response = await this.repository.profileInfo(decoded_token?.id!)
 
         await this.redis.setRedis(`user_profile_${decoded_token?.id}`, response.rows[0], 2 * 24 * 60 * 60)
-        console.log("⌛ Cache set for user profile")
+        // console.log("⌛ Cache set for user profile")
 
         return response.rows[0]
     }

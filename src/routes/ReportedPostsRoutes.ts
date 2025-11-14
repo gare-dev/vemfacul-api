@@ -10,7 +10,6 @@ const service = new ReportesPostsService(new ReportedPostsRepository())
 router.post("/user/post/report", authGuard, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id_post } = req.body
-        console.log(req.user)
         const id_user = req.user.id
 
         await service.reportPost(id_post, id_user)
