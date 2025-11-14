@@ -117,9 +117,13 @@ JOIN users_table u ON u.id_user = p.id_user;`
   ) as total_likes
 from
   postagens_table p
+  left join reported_posts_table r on r.id_post = p.id_postagem
   join users_table u on p.id_user = u.id_user
 where
-  coments = false
+  coments = false AND (
+        r.id_post IS NULL               
+        OR r.status != 'REMOVED'        
+      )
 order by
   p.created_at desc;`
         return await pool.query(query, values)

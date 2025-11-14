@@ -26,9 +26,8 @@ export class PostService {
 
 
         if (post.rowCount && post.rowCount === 0) throw new CustomError("Usuário já curtiu essa postagem.", 400, "ALREADY_LIKED")
-        
+
         const id_destinatario = +post.rows[0].id_destinatario
-        console.log(id_destinatario)
 
         await this.NotificationService.createNotifications(Number(id_user), id_destinatario, Number(id_post), "Curtida");
 
@@ -76,7 +75,6 @@ export class PostService {
         if (!postagem_pai) throw new CustomError("ID Father é necessário para fazer o post", 400, "IDFATHER_MISSING")
         const comment = await this.repository.createComment(content, postagem_pai, id_user)
         const id_destinatario = comment.rows[0].id_destinatario
-        console.log(id_destinatario, id_user, postagem_pai)
         return await this.NotificationService.createNotifications(id_user, id_destinatario, postagem_pai, "Comentário")
     }
 
