@@ -10,7 +10,6 @@ export class NotificationsService {
         if (!id_destinatario) throw new CustomError("ID do user é necessário para criar uma notificação.", 400, "MISSING_IDUSER")
 
         await notificationQueue.add(`notification`, { id_actor, id_destinatario, id_post, type })
-        console.log("notificação indo pra fila")
     }
 
     async getNotifications(id_user: number, mode: string) {

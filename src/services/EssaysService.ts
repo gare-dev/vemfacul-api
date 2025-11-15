@@ -16,7 +16,7 @@ export class EssaysService {
 
         const essay_count = await this.repository.essayCountByMonth(id_user)
 
-        if (essay_count.rows && essay_count.rows[0].count >= 3) throw new CustomError("Limite de redações mensais atingida", 400, "ESSAYS_LIMIT")
+        if (essay_count.rows && essay_count.rows[0].count >= 20) throw new CustomError("Limite de redações mensais atingida", 400, "ESSAYS_LIMIT")
         await essayQueue.add("evaluateEssay", { id_user, essay, title, theme })
     }
 
